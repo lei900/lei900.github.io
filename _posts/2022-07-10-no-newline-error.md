@@ -1,7 +1,7 @@
 ---
 title:  No newline at end of fileエラーについて
 category: "Ruby on Rails"
-tags: [Ruby, Ruby on Rails, unix]
+tags: [Ruby, Ruby on Rails, UNIX]
 ---
 
 毎回Lintチェックで怒られたエラー..
