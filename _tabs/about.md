@@ -22,4 +22,4 @@ Since I am learning a lot of things, I think writing them down may help me to ga
 
 I'm still a newbie, so if you find any mistakes on my blog, I'd appreciate it if you could let me know in the comments.
 
-And any comments and suggestions are welcomed!
+Any comments and suggestions are welcomed!
