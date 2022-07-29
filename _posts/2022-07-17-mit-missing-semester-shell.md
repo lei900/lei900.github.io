@@ -19,7 +19,7 @@ Course located at: https://missing.csail.mit.edu/
 
 - Environment variable(環境変数)
 
-```
+```shell
  $ date
 2022年 7月29日 金曜日 15時20分22秒 JST
 $ echo Hello
@@ -30,7 +30,7 @@ ex. Input `date`, the shell will execute the `date` program to print the date on
 
 If the shell doesn’t match any keywords, it consults an `environment variable`, called `$PATH`, that lists which directories the shell should search for programs when it is given a command.
 
-```
+```shell
 $ echo $PATH
 /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 $ which echo
@@ -70,7 +70,7 @@ hello
 ```
 use `>>` to append to a file.
 
-```
+```shell
 $ cat < hello.txt >> hello2.txt
 $ cat hello2.txt  #will get two lines of "hello"
 hello
@@ -81,7 +81,7 @@ hello
 
 Like using the output of one program as the input of another program.
 
-```
+```shell
 $ ls -l / | tail -n1 # listing files under / and display the last line
 lrwxr-xr-x@  1 root  wheel    11  1  1  2020 var -> private/var
 ```
@@ -92,7 +92,7 @@ lrwxr-xr-x@  1 root  wheel    11  1  1  2020 var -> private/var
 `tail -n [number]`:  display the last part of a file, with `n`lines.
 
 
-```
+```shell
 $ curl --head --silent google.com | grep --ignore-case content-length | cut -d' ' -f 2
 219
 ```
@@ -115,7 +115,7 @@ ex. for file `test.txt`
 ```
 to display the 1st and 3rd fields using “:” as a delimiter:
 
-```
+```shell
 $cut test.txt -d ':' -f 1,3
 # output will be
 245:4540	Admin	01
@@ -126,7 +126,7 @@ $cut test.txt -d ':' -f 1,3
 
 There are 3 sets of permissions. One set for the owner of the file, another set for the members of the file’s group, and a final set for everyone else.
 
-```
+```shell
 $ ls -l
 drwxrwxr-x  29 root  admin   928  7 22 17:18 Applications
 -rw-r--r--  1 mia  staff  61  7 29 11:07 semester
@@ -158,7 +158,7 @@ When we try to run an executable file, the `execve` program is called to repla
 If we try to run a text file, `execve` expects the first two characters of the file to be “`#!`”  followed by a path to the interpreter that will be used to interpret the rest of the script.
 
 ex.   
-```
+```shell
 $ echo '#!/bin/sh' >> greetings
 $ echo 'echo "Hello, ${USER}"' >> greetings
 $ cat greetings
@@ -184,7 +184,7 @@ To use `chmod` to set permissions, we need to tell it:
 - *Which*: Which of the permissions are we setting?  
 `r`, `w`, `x`
 
-```
+```shell
 $ ls -l
 -rw-r--r--  1 mia  staff  32  7 29 17:38 greetings
 
@@ -194,7 +194,7 @@ $ ls -l
 ```
 
 Then, `greetings` is an executable file
-```
+```shell
 $  ./greetings
 Hello, mia
 ```
@@ -202,7 +202,7 @@ Hello, mia
 ## Exercises
 
 *Create a new directory called `missing` under `/tmp`.*
-```
+```shell
 mkdir /tmp/missing
 ```
 *Use `touch` to create a new file called `semester` in` missing`.*
@@ -215,7 +215,7 @@ touch /tmp/missing/semester
 
 `curl --head --silent https://missing.csail.mit.edu`
 
-```
+```shell
 echo '#!/bin/sh' >> semester
 echo 'curl --head --silent https://missing.csail.mit.edu' >> semester
 ```
@@ -234,7 +234,7 @@ No execution bit
 
 *Use `chmod` to make it possible to run the command` ./semester` rather than having to type `sh` semester. How does your shell know that the file is supposed to be interpreted using `sh`?*
 
-```
+```shell
 $ chmod +x semester
 $ ./semester
 HTTP/2 200 
@@ -265,7 +265,7 @@ content-length: 7991
 
 *Use` | `and` >` to write the “last modified” date output by `semester `into a file called `last-modified.txt` in your home directory.*
 
-```
+```shell
 # get the 5th line
 $ ./semester | head -n 5 | tail -n 1 
 or 
