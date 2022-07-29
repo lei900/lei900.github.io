@@ -287,5 +287,7 @@ Sat, 14 May 2022 10:50:11 GMT
 [Using Shebang #! in Linux Scripts](https://www.baeldung.com/linux/shebang)
 
 [curl command in Linux with Examples](https://www.geeksforgeeks.org/curl-command-in-linux-with-examples/)
+
 [How to Use the chmod Command on Linux](https://www.howtogeek.com/437958/how-to-use-the-chmod-command-on-linux/)
+
 [./missing-semester - Course Overview + The Shell - Exercises](https://zacheller.dev/missing-semester0)
