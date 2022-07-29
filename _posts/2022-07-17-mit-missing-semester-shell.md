@@ -1,5 +1,5 @@
 ---
-title:  [Missing Semester] - The Shell
+title:  Missing Semester - The Shell
 category: "Linux"
 tags: [Shell, Linux, MIT, Missing Semester]
 ---
