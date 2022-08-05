@@ -58,7 +58,7 @@ Normally, a program’s input and output are both your terminal. That is, your k
 When given file names as arguments, it prints the contents of each of the files in sequence to its output stream. 
 
 But when `cat` is not given any arguments, it prints contents from its input stream to its output stream.
-```
+```zsh
 $ echo hello > hello.txt # "hello" as input stream, "hello.txt" as output stream
 $ cat hello.txt
 hello
