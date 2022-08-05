@@ -1,7 +1,7 @@
 ---
 title:  Capybaraで新しいwindowを指定するため、window contextを切り替える方法
 category: "Ruby on Rails"
-tags: [RSpec, rails, test, capybara]
+tags: [RSpec, Ruby on Rails, test, capybara]
 ---
 
 Capybaraでsystemテストを行った時、`can't find element'のエラーが出た。  
