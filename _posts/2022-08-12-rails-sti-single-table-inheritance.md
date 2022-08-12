@@ -24,8 +24,14 @@ tags: [Ruby on Rails, Database]
 - 多段継承がない場合、enumで処理の異なる部分だけを分岐してやったほうが、全体としてコピペも減り、フローも追いやすくなる
 - サードパーティのgemがSTIでの利用を考慮していないため、実装上うまくいかなくて、そのgemの利用が無理になったケースが多い
 
+<br>
+それより、今回の場合は、記事のカテゴリやタグと作者は同じクラスから継承していていることは、個人的にちょっと違和感を感じた。  
 
-参照
-[シングルテーブル継承 （STI）](https://railsguides.jp/association_basics.html#%E3%82%B7%E3%83%B3%E3%82%B0%E3%83%AB%E3%83%86%E3%83%BC%E3%83%96%E3%83%AB%E7%B6%99%E6%89%BF-%EF%BC%88sti%EF%BC%89)
-[クラスの継承（単一テーブル継承）](https://ryota21silva.hatenablog.com/entry/2020/06/09/184330)
+author, category, tagそれぞれnameやslug、descriptionとの共通属性があったため、STIを使ったのか、と思うけど。  
+現実世界のものから考えると、カテゴリとタグは似たような性質があって、サブクラスとして一緒に扱うのが問題ないかもしれないけど、作者はちょっと違うかなと思った..
+
+
+参照  
+[シングルテーブル継承 （STI）](https://railsguides.jp/association_basics.html#%E3%82%B7%E3%83%B3%E3%82%B0%E3%83%AB%E3%83%86%E3%83%BC%E3%83%96%E3%83%AB%E7%B6%99%E6%89%BF-%EF%BC%88sti%EF%BC%89)  
+[クラスの継承（単一テーブル継承）](https://ryota21silva.hatenablog.com/entry/2020/06/09/184330)  
 [みんなRailsのSTIを誤解してないか!?](https://qiita.com/yebihara/items/9ecb838893ad99be0561)
