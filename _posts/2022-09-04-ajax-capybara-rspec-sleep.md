@@ -28,7 +28,7 @@ capybaraを待たせる方法は主に二つあるそうで、
 - `sleep`を使って、capybaraを一時停止させる
 ```
 click_on '次の質問'
-sleep 1
+sleep 1   # capybaraを1秒間sleepさせる
 click_on '次の操作ボタン'
 ```
 - ただ`sleep`を大量使用する場合、テスト実行効率が非常に悪くなるので、
