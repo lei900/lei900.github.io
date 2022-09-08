@@ -37,7 +37,7 @@ tags: [Ruby on Rails, SQL, Database]
     end
   end
 ```
-<details>
+<details> 
 <summary>修正前SQLクエリ発行状況</summary>
 
 ```ruby
@@ -146,7 +146,7 @@ Party Load (0.2ms)  SELECT "parties".* FROM "parties"
     UserParty.insert_all(record_array)
   end
 ```
-<details>
+<details> 
 <summary>修正後SQLクエリ発行状況</summary>
 
 ```ruby
@@ -174,7 +174,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
 ```
 これも質問の数分でSQLクエリが発行される。
 
-<details>
+<details> 
 <summary>修正前SQLクエリ発行状況</summary>
 
 ```ruby
@@ -223,7 +223,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
     user_questions.create(question_id: question.id, result: result)
   end
 ```
-<details>
+<details> 
 <summary>修正後SQLクエリ発行状況</summary>
 
 ```ruby
@@ -257,7 +257,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
 とりあえず、政党意見を一つ一つ取り出して、ユーザー意見と比較する方法にした。
 作成したコードもややこしい感じで、チームメンバーに理解してもらうのが時間かかったそう。
 
-<details>
+<details> 
 <summary>修正前のコード</summary>
 
 1. まずcontrollerのアクション内で、ユーザーと政党の中間テーブルuser_partiesからをユーザーと紐づいた政党レコードを一つ一つ取り出して、ポイント計算を行う
@@ -356,7 +356,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
 </details>
 
 修正前のSQLクエリ発行も政党の数分で政党意見取得と政党ポイント更新の2重発行になっている。
-<details>
+<details> 
 <summary>修正前SQLクエリ発行状況</summary>
 
 ```ruby
@@ -481,7 +481,7 @@ current_user.user_parties.calculate_point(@question, result)
   end
 ```
 
-<details>
+<details> 
 <summary>修正後SQLクエリ発行状況</summary>
 
 ```ruby
@@ -520,7 +520,7 @@ def result
     end
 ```
 
-<details>
+<details> 
 <summary>修正前SQLクエリ発行状況</summary>
 
 ```ruby
@@ -560,7 +560,7 @@ Processing by StaticPagesController#result as TURBO_STREAM
     points = user_parties.pluck(:point)
   end
 ```
-<details>
+<details> 
 <summary>修正後SQLクエリ発行状況</summary>
 
 ```ruby
