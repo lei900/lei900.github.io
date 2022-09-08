@@ -134,6 +134,7 @@ Party Load (0.2ms)  SELECT "parties".* FROM "parties"
   TRANSACTION (0.5ms)  COMMIT
   ↳ app/models/user.rb:18:in `block in party_relation'
 ```
+
 </details>
 
 改善後のやり方は`pluck`を使って、政党IDを一括取得して、｀user.user_parties｀の中身となるデータを配列形式で一括生成する。  
@@ -155,6 +156,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
   UserParty Bulk Insert (1.1ms)  INSERT INTO "user_parties" ("user_id","party_id","point","created_at","updated_at") VALUES (60, 1, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 2, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 3, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 4, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 5, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 6, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 7, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 8, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 9, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) ON CONFLICT  DO NOTHING RETURNING "id"
   ↳ app/models/user.rb:15:in `create_party_relation'
 ```
+
 </details>
 
 ## ユーザーと質問の紐付け
@@ -211,6 +213,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
   TRANSACTION (0.5ms)  COMMIT
   ↳ app/models/user.rb:25:in `block in question_relation'
 ```
+
 </details>
 
 もう一つのデメリットとしては、最初から全部の質問と紐づいて、後でユーザーが質問を答えたら、また質問レコードを取得して、データを更新する操作が必要。それで質問レコードを取得するクエリ自体も重複発行になる。
@@ -234,6 +237,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
   TRANSACTION (5.8ms)  COMMIT
   ↳ app/models/user.rb:19:in `save_result'
 ```
+
 </details>
 
 ## 政党ポイント計算メソッド修正
@@ -261,13 +265,16 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
 <summary>修正前のコード</summary>
 
 1. まずcontrollerのアクション内で、ユーザーと政党の中間テーブルuser_partiesからをユーザーと紐づいた政党レコードを一つ一つ取り出して、ポイント計算を行う
+
 ```ruby
     current_user.user_parties.each do |user_party|
       user_party.calculate_point(user_question)
     end
 ```
+
 2. ポイント計算のメソッドの中身として、まず政党と質問の中間テーブルparty_questionsから政党意見を取得し、  
 そしてユーザー意見と比較して、一致したら、加点する;不一致だったら、減点する。
+
 ```ruby
   def calculate_point(user_question)
     # 政党意見を参照するため、party_questionsテーブルから政党を取得してopinionを参照する
@@ -286,8 +293,10 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
     end
   end
 ```
+
 3. さらにユーザーと政党意見の一致か不一致かを判断するメソッドを追加する  
 ここは中間テーブル名を挟んで、見た目もややこしい感じになっている。
+
 ```ruby
   # ユーザ意見が政党と一致する場合
   # つまり両方とも賛成、あるいはともに反対する場合
@@ -334,6 +343,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
 ```
 
 4. 最後に加点と減点を実行するメソッド
+
 ```ruby
   # ユーザー意見が超賛成の場合、政党point+2
   # ユーザー意見が賛成の場合、政党point+1
@@ -353,6 +363,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
     save
   end
 ```
+
 </details>
 
 修正前のSQLクエリ発行も政党の数分で政党意見取得と政党ポイント更新の2重発行になっている。
@@ -448,6 +459,7 @@ User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $
   TRANSACTION (0.4ms)  COMMIT
   ↳ app/models/user_party.rb:30:in `add_point'
 ```
+
 </details>
 
 修正後のロジックはなるべく設計の時の考え方をそのまま反映するようにした。
@@ -497,6 +509,7 @@ current_user.user_parties.calculate_point(@question, result)
   UserParty Update All (0.7ms)  UPDATE "user_parties" SET point = point - 1 WHERE "user_parties"."user_id" = $1 AND (party_id IN (4,5,7,8))  [["user_id", 60]]
   ↳ app/models/user_party.rb:18:in `calculate_point'
 ```
+
 </details>
 
 ## 結果一覧メソッドの修正
@@ -550,6 +563,7 @@ Processing by StaticPagesController#result as TURBO_STREAM
   ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
   Rendering layout layouts/application.html.erb
 ```
+
 </details>
 
 修正後は、`joins`と`pluck`メソッド使って、政党ポイントデータを一括取得する
@@ -572,6 +586,7 @@ User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $
   UserParty Pluck (0.2ms)  SELECT "user_parties"."point" FROM "user_parties" WHERE "user_parties"."user_id" = $1 ORDER BY "user_parties"."point" DESC  [["user_id", 66]]
   ↳ app/controllers/static_pages_controller.rb:10:in `result'
 ```
+
 </details>
 
 以上でSQLクエリが大量発行したコード部分をリファクタリングした。
