@@ -149,12 +149,12 @@ Party Load (0.2ms)  SELECT "parties".* FROM "parties"
 <details> 
 <summary>修正後SQLクエリ発行状況</summary>
 
-```ruby
+<pre style="background-color:whitesmoke;">
 Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
   ↳ app/models/user.rb:14:in `create_party_relation'
   UserParty Bulk Insert (1.1ms)  INSERT INTO "user_parties" ("user_id","party_id","point","created_at","updated_at") VALUES (60, 1, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 2, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 3, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 4, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 5, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 6, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 7, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 8, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 9, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) ON CONFLICT  DO NOTHING RETURNING "id"
   ↳ app/models/user.rb:15:in `create_party_relation'
-```
+</pre>
 
 </details>
 
@@ -178,7 +178,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
 <details> 
 <summary>修正前SQLクエリ発行状況</summary>
 
-```ruby
+<pre style="background-color:whitesmoke;">
  Question Load (0.2ms)  SELECT "questions".* FROM "questions"
   ↳ app/models/user.rb:24:in `question_relation'
   TRANSACTION (0.1ms)  BEGIN
@@ -211,7 +211,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
   ↳ app/models/user.rb:25:in `block in question_relation'
   TRANSACTION (0.5ms)  COMMIT
   ↳ app/models/user.rb:25:in `block in question_relation'
-```
+</pre>
 
 </details>
 
@@ -228,14 +228,14 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
 <details> 
 <summary>修正後SQLクエリ発行状況</summary>
 
-```ruby
+<pre style="background-color:whitesmoke;">
   Question Load (0.2ms)  SELECT "questions".* FROM "questions" WHERE "questions"."id" = $1 LIMIT $2  [["id", 1], ["LIMIT", 1]]
   ↳ app/models/user.rb:19:in `save_result'
   UserQuestion Create (0.5ms)  INSERT INTO "user_questions" ("user_id", "question_id", "result", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 60], ["question_id", 1], ["result", 0], ["created_at", "2022-09-01 11:57:34.573782"], ["updated_at", "2022-09-01 11:57:34.573782"]]
   ↳ app/models/user.rb:19:in `save_result'
   TRANSACTION (5.8ms)  COMMIT
   ↳ app/models/user.rb:19:in `save_result'
-```
+</pre>
 
 </details>
 
@@ -265,16 +265,16 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
 
 1. まずcontrollerのアクション内で、ユーザーと政党の中間テーブルuser_partiesからをユーザーと紐づいた政党レコードを一つ一つ取り出して、ポイント計算を行う
 
-```ruby
+<pre style="background-color:whitesmoke;">
     current_user.user_parties.each do |user_party|
       user_party.calculate_point(user_question)
     end
-```
+</pre>
 
 2. ポイント計算のメソッドの中身として、まず政党と質問の中間テーブルparty_questionsから政党意見を取得し、  
 そしてユーザー意見と比較して、一致したら、加点する;不一致だったら、減点する。
 
-```ruby
+<pre style="background-color:whitesmoke;">
   def calculate_point(user_question)
     # 政党意見を参照するため、party_questionsテーブルから政党を取得してopinionを参照する
     party_questions = PartyQuestion.where(question_id: user_question.question_id)
@@ -291,12 +291,12 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
       reduce_point(user_result)
     end
   end
-```
+</pre>
 
 3. さらにユーザーと政党意見の一致か不一致かを判断するメソッドを追加する  
 ここは中間テーブル名を挟んで、見た目もややこしい感じになっている。
 
-```ruby
+<pre style="background-color:whitesmoke;">
   # ユーザ意見が政党と一致する場合
   # つまり両方とも賛成、あるいはともに反対する場合
   def agree_with_party?(party_question)
@@ -339,11 +339,11 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
   def user_negative_but_party_agree?(party_question)
     result_negative? && party_question.agree?
   end
-```
+</pre>
 
 4. 最後に加点と減点を実行するメソッド
 
-```ruby
+<pre style="background-color:whitesmoke;">
   # ユーザー意見が超賛成の場合、政党point+2
   # ユーザー意見が賛成の場合、政党point+1
   def add_point(user_result)
@@ -361,7 +361,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
     self.point -= 1
     save
   end
-```
+</pre>
 
 </details>
 
@@ -369,7 +369,7 @@ Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
 <details> 
 <summary>修正前SQLクエリ発行状況</summary>
 
-```ruby
+<pre style="background-color:whitesmoke;">
 # 修正前
 User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
   ↳ app/controllers/application_controller.rb:5:in `current_user'
@@ -457,17 +457,20 @@ User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $
   ↳ app/models/user_party.rb:30:in `add_point'
   TRANSACTION (0.4ms)  COMMIT
   ↳ app/models/user_party.rb:30:in `add_point'
-```
+</pre>
 
 </details>
 
 修正後のロジックはなるべく設計の時の考え方をそのまま反映するようにした。
 まず個々の政党でなく、ユーザーと紐づいた政党レコードを一括更新できるようにする。
+
 ```ruby
 current_user.user_parties.calculate_point(@question, result)
 ```
+
 そして賛成意見を持つ政党リストと反対意見を持つ政党リストを取得する。
 最後に`update_all`メソッドを使って、ふたつグループの政党ポイントを一括更新する。
+
 ```ruby
   def self.calculate_point(question, user_result)
     # 該当質問に賛成意見を持つ政党リストを取得
@@ -495,7 +498,7 @@ current_user.user_parties.calculate_point(@question, result)
 <details> 
 <summary>修正後SQLクエリ発行状況</summary>
 
-```ruby
+<pre style="background-color:whitesmoke;">
 # 修正後
   User Load (0.3ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 60], ["LIMIT", 1]]
   ↳ app/controllers/application_controller.rb:5:in `current_user'
@@ -507,7 +510,7 @@ current_user.user_parties.calculate_point(@question, result)
   ↳ app/models/user_party.rb:17:in `calculate_point'
   UserParty Update All (0.7ms)  UPDATE "user_parties" SET point = point - 1 WHERE "user_parties"."user_id" = $1 AND (party_id IN (4,5,7,8))  [["user_id", 60]]
   ↳ app/models/user_party.rb:18:in `calculate_point'
-```
+</pre>
 
 </details>
 
@@ -517,6 +520,7 @@ current_user.user_parties.calculate_point(@question, result)
 ここでchartjsを使うので、政党名と政党ポイントを分けて取得する必要
 最初のやり方としては、まず政党とポイントをそれぞれ空の配列を作成し、user_partiesテーブルから一つ一つレコードを取得して、配列にデータをpushする。  
 これも政党の数分でSQLが発行される。  
+
 修正前コード
 ```ruby
 def result
@@ -535,7 +539,7 @@ def result
 <details> 
 <summary>修正前SQLクエリ発行状況</summary>
 
-```ruby
+<pre style="background-color:whitesmoke;">
 # 修正前
 Processing by StaticPagesController#result as TURBO_STREAM
   User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 60], ["LIMIT", 1]]
@@ -561,7 +565,7 @@ Processing by StaticPagesController#result as TURBO_STREAM
   Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 5], ["LIMIT", 1]]
   ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
   Rendering layout layouts/application.html.erb
-```
+</pre>
 
 </details>
 
@@ -576,7 +580,7 @@ Processing by StaticPagesController#result as TURBO_STREAM
 <details> 
 <summary>修正後SQLクエリ発行状況</summary>
 
-```ruby
+<pre style="background-color:whitesmoke;">
 # 修正後
 User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 66], ["LIMIT", 1]]
   ↳ app/controllers/application_controller.rb:5:in `current_user'
@@ -584,7 +588,7 @@ User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $
   ↳ app/controllers/static_pages_controller.rb:9:in `result'
   UserParty Pluck (0.2ms)  SELECT "user_parties"."point" FROM "user_parties" WHERE "user_parties"."user_id" = $1 ORDER BY "user_parties"."point" DESC  [["user_id", 66]]
   ↳ app/controllers/static_pages_controller.rb:10:in `result'
-```
+</pre>
 
 </details>
 
