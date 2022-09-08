@@ -40,7 +40,7 @@ tags: [Ruby on Rails, SQL, Database]
 <details> 
 <summary>修正前SQLクエリ発行状況</summary>
 
-<blockquote>
+<pre>
 Party Load (0.2ms)  SELECT "parties".* FROM "parties"
   ↳ app/models/user.rb:17:in `party_relation'
   TRANSACTION (0.1ms)  BEGIN
@@ -133,7 +133,7 @@ Party Load (0.2ms)  SELECT "parties".* FROM "parties"
   ↳ app/models/user.rb:18:in `block in party_relation'
   TRANSACTION (0.5ms)  COMMIT
   ↳ app/models/user.rb:18:in `block in party_relation'
-</blockquote>
+</pre>
 </details>
 
 改善後のやり方は`pluck`を使って、政党IDを一括取得して、｀user.user_parties｀の中身となるデータを配列形式で一括生成する。  
