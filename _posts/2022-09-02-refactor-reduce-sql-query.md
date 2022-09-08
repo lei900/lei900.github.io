@@ -40,7 +40,7 @@ tags: [Ruby on Rails, SQL, Database]
 <details> 
 <summary>修正前SQLクエリ発行状況</summary>
 
-<pre>
+<pre style="background-color:whitesmoke;">
 Party Load (0.2ms)  SELECT "parties".* FROM "parties"
   ↳ app/models/user.rb:17:in `party_relation'
   TRANSACTION (0.1ms)  BEGIN
