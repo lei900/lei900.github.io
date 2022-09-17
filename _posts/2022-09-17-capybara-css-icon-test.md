@@ -18,6 +18,7 @@ tags: [RSpec, Ruby on Rails, test, capybara, css, fontawesome]
 </div>
 ```
 {: file="_blog.html.erb" }
+
 ```ruby
 <%= link_to blog_bookmark_path(blog), remote: true, method: :post do  %>
   <i class="bi bi-star"></i>
@@ -34,6 +35,7 @@ tags: [RSpec, Ruby on Rails, test, capybara, css, fontawesome]
 
 生成するHTMLファイルは下記となる
 - ブックマークiconクリック前
+
 ```html
 # blog_idが1のブログ
 <div id="js-blog-bookmark-1">
@@ -42,6 +44,7 @@ tags: [RSpec, Ruby on Rails, test, capybara, css, fontawesome]
   </a>
 </div>
 ```
+
 - ブックマークiconクリックした後
 ```html
 # blog_idが1のブログ
@@ -60,6 +63,7 @@ tags: [RSpec, Ruby on Rails, test, capybara, css, fontawesome]
 find("#js-blog-bookmark-#{blog.id}").find(:css, 'i.bi.bi-star').click
 ```
 ブックマークされたiconの表示を確認する
+
 - 方法1: `have_css`を使う
 ```ruby
 expect(page).to have_css 'i.bi.bi-star-fill'
@@ -83,6 +87,7 @@ iconをクリックする方法について、
 直接リンクにclassやid、titleをつけてiconをクリックするのも一つの方法。
 
 html部分が下記に修正する
+
 ```html
 <div id="js-blog-bookmark-1">
   <a class="bookmark-link" title="Create bookmark" data-remote="true" rel="nofollow" data-method="post" href="/blogs/1/bookmark"> 
@@ -90,7 +95,9 @@ html部分が下記に修正する
   </a>
 </div>
 ```
+
 そうすると、下記のようにクリックできる
+
 ```ruby
 # ブックマークiconが複数存在する場合、一番目に指定
 find_link('Create bookmark', match: :first).click
