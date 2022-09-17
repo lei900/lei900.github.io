@@ -46,6 +46,7 @@ tags: [RSpec, Ruby on Rails, test, capybara, css, fontawesome]
 ```
 
 - ブックマークiconクリックした後
+
 ```html
 # blog_idが1のブログ
 <div id="js-blog-bookmark-1">
