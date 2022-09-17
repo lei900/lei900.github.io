@@ -61,7 +61,7 @@ find("#js-blog-bookmark-#{blog.id}").find(:css, 'i.bi.bi-star').click
 ```
 ブックマークされたiconの表示を確認する
 - 方法1: `have_css`を使う
-```
+```ruby
 expect(page).to have_css 'i.bi.bi-star-fill'
 ```
 
