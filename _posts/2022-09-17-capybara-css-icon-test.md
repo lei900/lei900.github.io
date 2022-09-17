@@ -54,19 +54,23 @@ tags: [RSpec, Ruby on Rails, test, capybara, css, fontawesome]
 
 ## capybaraでのテスト方法
 
-まずは# 一番目のブログのブックマークiconをクリックする  
+まずは一番目のブログのブックマークiconをクリックする  
 (任意のブログでも良いけど)
 ```ruby
 find("#js-blog-bookmark-#{blog.id}").find(:css, 'i.bi.bi-star').click
 ```
 ブックマークされたiconの表示を確認する
-- 方法1: `has_css?`メソッドを使う
+- 方法1: `have_css`を使う
+```
+expect(page).to have_css 'i.bi.bi-star-fill'
+```
+
+- 方法2: `has_css?`メソッドを使う
 ```ruby
 expect(has_css?('i.bi.bi-star-fill', count: 1)).to eq true
 ```
-ブックマークされたiconが一つのみの場合が前提。
 
-- 方法2: `within`メソッドを使う
+- 方法3: `within`メソッドを使う
 ```ruby
 within("#js-blog-bookmark-#{blog.id}") do
   expect(page).to have_css 'i.bi.bi-star-fill'
