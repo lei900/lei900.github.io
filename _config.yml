@@ -26,7 +26,7 @@ title: Lei's Notebook                         # the main title
 tagline: Learning journals about programing   # it will display as the sub-title
 
 description: >-                        # used by seo meta and the atom feed
-30代未経験でエンジニア転職を目指して勉強中。主にRails関連の内容を発信。
+  30代未経験でエンジニア転職を目指して勉強中。主にRails関連の内容を発信。
 
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
 url: 'https://lei900.github.io'
