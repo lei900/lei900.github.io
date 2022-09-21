@@ -8,7 +8,7 @@ tags: ["Better Code", Refactor, "Reading Notes"]
 
 >コードは他の人が最短時間で理解できるように書かなければいけない。
 
-### 第二章：名前に情報を詰め込む
+## 第二章：名前に情報を詰め込む
 **1. 明確な単語を選ぶ**
 
 メソッド名や変数名は曖昧な単語を使うより、類語辞典を使って、カラフルな単語を選んだ方良い。
@@ -97,7 +97,7 @@ results = Database.all_objects.filter(”year ≤ 2011”)
 
 例えば、`get()`や`size()`など軽量なメソッドとして期待されている。
 
-例：`getMean()`
+- 例：`getMean()`
 
 ここの`getMean()`は過去のデータを全てイテレートして、その場で平均値を計算するメソッド。
 
@@ -105,7 +105,7 @@ results = Database.all_objects.filter(”year ≤ 2011”)
 その計算コストがかかることを知らないメンバーだと、思わずに`getMean()`を呼び出してしまう可能性がある。
 そういう誤解を避けるため、`computeMean()`を使った方良い。
 
-例：`list::size()`
+- 例：`list::size()`
 
 ```c++
 void ShrinkList(list<Node>& list, int max_size) {
