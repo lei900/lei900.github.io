@@ -69,7 +69,7 @@ results = Database.all_objects.filter(”year ≤ 2011”)
 **2. 例：Clip(text, length)**
 
 段落の内容を切り抜く関数 `Clip(text, length)`
-最後から`length`文字を削除するか(`remove`)、最大`length`文字まで切り詰めるか(`truncate`)か、また曖昧。
+最後から`length`文字を削除するか(`remove`)、最大`length`文字まで切り詰めるか(`truncate`)、また曖昧。
 もし`Truncate(text, length)`にするなら、lengthは`max_length`にした方良い
 
 さらに、lengthはバイト数か、文字数か、単語数か、これも明確にする
@@ -115,7 +115,7 @@ void ShrinkList(list<Node>& list, int max_size) {
 ```
 ここの`list.size()`はLinked Listのノード数を事前計算せずに順番にカウントしているので、
 計算量はO(n)になっている。  
-`ShrinkList()`全体の計算量はO($n^2$)になっている。
+それで`ShrinkList()`全体の計算量はO($n^2$)になっている。
 
 元々`size()`という名前は暗黙の計算量はO(1)なので、誤解されないようにするため、
 

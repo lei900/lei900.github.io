@@ -51,11 +51,11 @@ public class PerformanceTester {
    // TcpConnectionSimulator (throughtput, latency, jitter, packet_loss)
    //                            [Kbps]     [ms]     [ms]   [percent]
    public static final TcpConnectionSimulator wifi = 
-       new TcpConnectionSimulator (500,   80,  200, 1);
+       new TcpConnectionSimulator (500,     80,      200,    1);
    public static final TcpConnectionSimulator t3_fiber =
-       new TcpConnectionSimulator (45000, 10,  0,   0);
+       new TcpConnectionSimulator (45000,   10,      0,      0);
    public static final TcpConnectionSimulator cell = 
-       new TcpConnectionSimulator (100,   400, 250, 5);
+       new TcpConnectionSimulator (100,     400,     250,    5);
 }
 ```
 
