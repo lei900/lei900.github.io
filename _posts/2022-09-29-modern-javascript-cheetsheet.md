@@ -59,7 +59,9 @@ const callMe = name => {
 **2種類のexports: **  
 
 - `default exports`：  
+
 モジュールごとにひとつだけdefault exportが指定できる
+
 ```javascript
 const person = {
   name: 'Max'
@@ -70,6 +72,7 @@ export default person
 {: file="person.js" }
 
 他のファイルでimportする時、任意の名前でimportできる
+
 ```javascript
 // 元の名前でimport
 import person from './person.js'
@@ -80,6 +83,7 @@ import people from './person.js'
 
 
 - `named exports`(名前付きエクスポート): 
+
 ```javascript
 export const clean = () => {...}
 export const baseData = 10;
@@ -87,6 +91,7 @@ export const baseData = 10;
 {: file="utility.js" }
 
 他のファイルでimportする時、名前通りにimportする必要
+
 ```javascript
 import { clean, baseData } from './utility.js'
 
@@ -278,6 +283,51 @@ console.log(secondPerson.name); // 'Max'
 
 そのため、`person.name = 'John'`で元のオブジェクトを変更しても、コピしたオブジェクトには影響はない。
 
+### 配列でよく使う関数 `map()`, `filter()`, `reduce()`
+
+**`map()`**
+
+配列内の要素を全部呼び出して、その結果を新しい配列として生成する。
+
+```javascript
+const array1 = [1, 4, 9, 16];
+const map1 = array1.map(x => x * 2);
+
+console.log(map1); // [2, 8, 18, 32]
+```
+
+**`filter()`**
+
+条件を満たす要素を抽出して新しい配列を生成する。
+
+```javascript
+const nums = [1,2,3,4,5,6]
+
+console.log(nums.filter(num => num > 3)) // [4, 5, 6]
+```
+
+**`reduce()`**
+
+配列内に対して関数を適用し、その処理によって配列の要素を(左から右に)一つの値にまとめる
+
+```javascript
+const nums = [1,2,3]
+
+let initValue = 0;
+const sumNumbers = nums.reduce(
+  (prev, curr) => prev + curr, initValue
+);
+
+console.log(sumNumbers); // 6 <= 0+1+2+3
+
+initValue = 2;
+
+const multiplyNumbers = nums.reduce(
+  (prev, curr) => prev * curr, initValue
+)
+
+console.log(multiplyNumbers); // 12 <= 2*1*2*3
+```
 
 ---
 参照  
