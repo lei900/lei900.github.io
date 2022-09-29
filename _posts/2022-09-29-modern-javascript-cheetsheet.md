@@ -262,7 +262,7 @@ console.log(person.name); // John
 そのため、`secondPerson.name`を変更したら、`secondPerson`が指すオブジェクト`{ name: 'Max' }`自体を`{ name: 'John' }`に変更することになるので、
 同じオブジェクトを指す`person`の中身も変更になる。
 
-!(画像)[(https://i.imgur.com/FcVrHmy.png)
+![画像](https://i.imgur.com/FcVrHmy.png)
 
 **`...`演算子を使うと、オブジェクトをコピできる**
 
