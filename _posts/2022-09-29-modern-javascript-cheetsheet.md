@@ -1,10 +1,10 @@
 ---
 title: モダンJavaScriptの簡単まとめ
 category: "Javascript"
-tags: [Javascript, React]
+tags: [JavaScript, React]
 ---
 
-今日からUdemyでReactコースを勉強し始めて、このコースでよく使うJavascriptの新機能について、まとめてみた。
+UdemyでReactコースを勉強し始めて、最初からReactでよく使うJavascriptの新機能について紹介があったので、Javascriptの復習としてメモする。
 
 ### 変数宣言 `var` / `const` / `let`
 

@@ -1,7 +1,7 @@
 ---
 title:  Javascript処理を挟むテストの場合、Capybaraを待たせる必要
 category: "Ruby on Rails"
-tags: [RSpec, Ruby on Rails, test, capybara, Javascript]
+tags: [RSpec, Ruby on Rails, test, capybara, JavaScript]
 ---
 
 # 状況

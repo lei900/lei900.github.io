@@ -1,7 +1,7 @@
 ---
 title:  replaceWith()とhtml()の違い
-category: "Javascript"
-tags: [Javascript, jQuery, Ruby on Rails]
+category: "JavaScript"
+tags: [JavaScript, jQuery, Ruby on Rails]
 ---
 
 - replaceWith()はタグとタグの中身内容を含めて置き換える
