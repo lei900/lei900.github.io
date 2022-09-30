@@ -1,6 +1,6 @@
 ---
-title: モダンJavaScriptの簡単まとめ
-category: "Javascript"
+title: ReactのためのJavaScript簡単まとめ
+category: "JavaScript"
 tags: [JavaScript, React]
 ---
 
