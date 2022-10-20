@@ -218,7 +218,7 @@ end
 
 # id          :integer
 
-class Post < Feed
+class Post < ApplicationRecord
   has_one :feed, as: :feedable
 end
 
@@ -229,7 +229,7 @@ end
 # id          :integer
 # place       :string
 
-class Event < Feed
+class Event < ApplicationRecord
   has_one :feed, as: :feedable
 end
 ```
@@ -239,7 +239,7 @@ Feed モデルに delegated_type :feedable を含めることで、feedable に�
 構文には少し違いがあるけど、大体は通常のポリモーフィック関連を設定するのと同じ。
 
 ただ delegated_type は一対一の関係なので、`post.feed.title`で親モデルの属性を取得できる。
-これは多対他のポリモーフィック関連ではできない。
+これは一対多のポリモーフィック関連ではできない。
 
 レコードの作成も簡単になる。
 
