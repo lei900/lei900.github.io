@@ -1,13 +1,15 @@
 ---
-title:  Capybaraでfontawesomeのiconリンクをテストする
+title: Capybaraでfontawesomeのiconリンクをテストする
 category: "Ruby on Rails"
-tags: [RSpec, Ruby on Rails, test, capybara, css, fontawesome]
+tags: [RSpec, Ruby on Rails, Test, Capybara, CSS, Fontawesome]
 ---
 
 ## 背景
+
 仮にブログ対してのブックマーク機能をテストする。
 
-ブックマーク関係のerbファイル内容は下記で
+ブックマーク関係の erb ファイル内容は下記で
+
 ```ruby
 <div id="js-blog-bookmark-<%= blog.id %>">
   <% if current_user.bookmarked?(blog) %>
@@ -17,82 +19,110 @@ tags: [RSpec, Ruby on Rails, test, capybara, css, fontawesome]
   <% end %>
 </div>
 ```
-{: file="_blog.html.erb" }
+
+{: file="\_blog.html.erb" }
 
 ```ruby
 <%= link_to blog_bookmark_path(blog), remote: true, method: :post do  %>
   <i class="bi bi-star"></i>
 <% end %>
 ```
-{: file="_bookmark.html.erb" }
+
+{: file="\_bookmark.html.erb" }
 
 ```ruby
 <%= link_to blog_bookmark_path(blog), remote: true, method: :delete do  %>
   <i class="bi bi-star-fill"></i>
 <% end %>
 ```
-{: file="_unbookmark.html.erb" }
 
-生成するHTMLファイルは下記となる
-- ブックマークiconクリック前
+{: file="\_unbookmark.html.erb" }
 
-```html
-# blog_idが1のブログ
-<div id="js-blog-bookmark-1">
-  <a data-remote="true" rel="nofollow" data-method="post" href="/blogs/1/bookmark"> 
-    <i class="bi bi-star"></i> 
-  </a>
-</div>
-```
+生成する HTML ファイルは下記となる
 
-- ブックマークiconクリックした後
+- ブックマーク icon クリック前
 
 ```html
 # blog_idが1のブログ
 <div id="js-blog-bookmark-1">
-  <a data-remote="true" rel="nofollow" data-method="delete" href="/blogs/1/bookmark"> 
-    <i class="bi bi-star-fill"></i> 
+  <a
+    data-remote="true"
+    rel="nofollow"
+    data-method="post"
+    href="/blogs/1/bookmark"
+  >
+    <i class="bi bi-star"></i>
   </a>
 </div>
 ```
 
-## capybaraでのテスト方法
+- ブックマーク icon クリックした後
 
-まずは一番目のブログのブックマークiconをクリックする  
+```html
+# blog_idが1のブログ
+<div id="js-blog-bookmark-1">
+  <a
+    data-remote="true"
+    rel="nofollow"
+    data-method="delete"
+    href="/blogs/1/bookmark"
+  >
+    <i class="bi bi-star-fill"></i>
+  </a>
+</div>
+```
+
+## capybara でのテスト方法
+
+まずは一番目のブログのブックマーク icon をクリックする  
 (任意のブログでも良いけど)
-```ruby
-find("#js-blog-bookmark-#{blog.id}").find(:css, 'i.bi.bi-star').click
-```
-ブックマークされたiconの表示を確認する
 
-- 方法1: `have_css`を使う
 ```ruby
-expect(page).to have_css 'i.bi.bi-star-fill'
+find("#js-blog-bookmark-#{blog.id}").find(:css, "i.bi.bi-star").click
 ```
 
-- 方法2: `has_css?`メソッドを使う
+ブックマークされた icon の表示を確認する
+
+- 方法 1: `have_css`を使う
+
 ```ruby
-expect(has_css?('i.bi.bi-star-fill', count: 1)).to eq true
+expect(page).to have_css "i.bi.bi-star-fill"
 ```
 
-- 方法3: `within`メソッドを使う
+- 方法 2: `has_css?`メソッドを使う
+
+```ruby
+expect(has_css?("i.bi.bi-star-fill", count: 1)).to eq true
+```
+
+- 方法 3: `within`メソッドを使う
+
 ```ruby
 within("#js-blog-bookmark-#{blog.id}") do
-  expect(page).to have_css 'i.bi.bi-star-fill'
+  expect(page).to have_css "i.bi.bi-star-fill"
 end
 ```
+
 これで、特定のブログがブックマークされたかどうかを確認できる
 
-### 補足：  
-iconをクリックする方法について、
-直接リンクにclassやid、titleをつけてiconをクリックするのも一つの方法。
+### 補足：
 
-html部分が下記に修正する
+icon をクリックする方法について、
+直接リンクに class や id、title をつけて icon をクリックするのも一つの方法。
+
+html 部分が下記に修正する
 
 ```html
 <div id="js-blog-bookmark-1">
-  <a class="bookmark-link" title="Create bookmark" data-remote="true" rel="nofollow" data-method="post" href="/blogs/1/bookmark"> 
-    <i class="bi bi-star"></i> 
+  <a
+    class="bookmark-link"
+    title="Create bookmark"
+    data-remote="true"
+    rel="nofollow"
+    data-method="post"
+    href="/blogs/1/bookmark"
+  >
+    <i class="bi bi-star"></i>
   </a>
 </div>
 ```
@@ -101,14 +131,16 @@ html部分が下記に修正する
 
 ```ruby
 # ブックマークiconが複数存在する場合、一番目に指定
-find_link('Create bookmark', match: :first).click
+find_link("Create bookmark", match: :first).click
 
 # ブックマークiconが一つのみの場合
-find_link('Create bookmark').click
+find_link("Create bookmark").click
 ```
 
 ### 一つ目の要素を指定する方法について
+
 ちなみに、一つ目の要素を指定する方法としては、下記の中に、`match`を使った方が良いだそう。
+
 ```ruby
 find(".my-selector", match: :first)
 # or
@@ -116,10 +148,11 @@ all(".my-selector").first
 # or
 first(".my-selector")
 ```
-なぜなら、`match`を使うと、capybaraがマッチする要素が少なくとも一つが現れるまで待ってくれる。
 
+なぜなら、`match`を使うと、capybara がマッチする要素が少なくとも一つが現れるまで待ってくれる。
 
 ---
+
 参照
 
 [Test css(icon) in Capybara](https://dev.to/n350071/test-css-icon-with-capybara-5fb8)  
