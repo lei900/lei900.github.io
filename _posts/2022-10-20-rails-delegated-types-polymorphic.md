@@ -209,7 +209,7 @@ Delegated Types は STI と抽象クラスの良いところを吸収して、�
 
 class Feed < ApplicationRecord
   belongs_to :user
-  delegated_type :feedable, type: %w[Post Event]
+  delegated_type :feedable, types: %w[Post Event]
 end
 
 # == Schema
@@ -245,10 +245,33 @@ Feed モデルに delegated_type :feedable を含めることで、feedable に�
 
 ```ruby
 Feed.create(
-  feedable: Event.create(place: 'Tokyo'),
-  title: '東京もくもく会',
-  content: 'Rails勉強会',
-  user: current_user
+  feedable: Event.create(place: "Tokyo"),
+  title: "東京もくもく会",
+  content: "Rails勉強会",
+  user: current_user,
+)
+```
+
+Rails 7 から導入された`accepts_nested_attributes_for `を利用してさらに簡単。
+
+```ruby
+class Feed < ApplicationRecord
+  belongs_to :user
+  delegated_type :feedable, types: %w[Post Event]
+
+  accepts_nested_attributes_for :feedable
+end
+```
+
+```ruby
+Feed.create(
+  feedable_type: "Event",
+  title: "東京もくもく会",
+  content: "Rails勉強会",
+  user: current_user,
+  feedable_attributes: {
+    place: "Tokyo",
+  },
 )
 ```
 
@@ -261,7 +284,6 @@ Feed.first.feedable
 Event.first.feed
 # <Feed id: 1, feedable_type: 'Event', feedable_id: 1,
 #       title: '東京もくもく会', content: 'Rails勉強会', user_id: 1>
-
 ```
 
 これで、重複するコラムと大量の NULL 値がなくなり、DB クエリでそれぞれのデータを取得できる。モデルそれぞれの振る舞いも設定できる。完璧な解決案!
