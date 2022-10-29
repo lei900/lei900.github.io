@@ -10,7 +10,7 @@ tags: [JavaScript, React]
 
 `&&`演算子の注意点について、React 公式ドキュメントでも紹介があったけど、赤い文字とかで特別強調していないので、見逃されやすいかも。
 
-### `&&`演算子を使った条件付きレンダー
+## `&&`演算子を使った条件付きレンダー
 
 React 公式ドキュメントでは下記の例を使っている。
 
@@ -37,7 +37,7 @@ React はそれの特性を利用して、もし条件部分が`true`の場合�
 
 もし条件部分が`false`なら、React は`&&`後ろの要素を無視して飛ばす。
 
-### 注意点
+## 注意点
 
 ただ、`&&`演算子を使うとき、注意しなければならない点がある。
 
@@ -57,7 +57,7 @@ return <div>{count && <h1>Messages: {count}</h1>}</div>;
 
 `Uncaught Error: Error(...): Nothing was returned from render. This usually means a return statement is missing. Or, to render nothing, return null.`
 
-### 代替案：if 文か三項演算子を使う
+## 代替案：if 文か三項演算子を使う
 
 予想外の問題を回避するため、`&&`を使うより、普通の if 文か三項演算子を使った方が良い。
 
