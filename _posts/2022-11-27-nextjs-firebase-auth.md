@@ -64,6 +64,7 @@ Firebase のアカウント取得やプロジェクト作成などの初期設�
 まずは Firebase が発行した各種 key を環境変数に設定する
 
 ```ini
+// .env.local
 NEXT_PUBLIC_FIREBASE_API_KEY=<YOUR_API_KEY>;
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<YOUR_DOMAIN>;
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=<YOUR_PROJECT_ID>;
@@ -72,8 +73,6 @@ NEXT_PUBLIC_FIREBASE_MESSEGING_SENDER_ID=<YOUR_MESSEGING_SENDER_ID>;
 NEXT_PUBLIC_FIREBASE_APP_ID=<YOUR_APP_ID>;
 ```
 
-{: file=".env.local" }
-
 ※ この変数はブラウザ 側で処理するので、変数名には`NEXT_PUBLIC`を追加する必要  
  [#exposing-environment-variables-to-the-browser](https://nextjs.org/docs/basic-features/environment-variables#exposing-environment-variables-to-the-browser)
 
@@ -81,7 +80,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=<YOUR_APP_ID>;
 
 ## Firebase 初期化と Firebase App オブジェクトを作成する
 
-```Javascript
+```Typescript
 // lib/initFirebase.ts
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
