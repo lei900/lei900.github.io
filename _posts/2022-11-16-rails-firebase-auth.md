@@ -1,5 +1,5 @@
 ---
-title: [Rails編]Rails + Next.js + Firebase V9 Authentication で認証付きのCRUDアプリを作る
+title: Rails編 - Rails + Next.js + Firebase V9 Authentication で認証付きのCRUDアプリを作る
 category: "Rails"
 tags: [React, Next.js, Rails, API, Firebase, TypeScript]
 ---
@@ -477,7 +477,6 @@ Rails 部分の検証で大変参考になった記事やソースコードは�
 - [How to Sign and Validate JSON Web Tokens – JWT Tutorial](https://www.freecodecamp.org/news/how-to-sign-and-validate-json-web-tokens/)
 
   JSON Web Token について勉強になった。
-
 
 # Next.js 側の実装
 
