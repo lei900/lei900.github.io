@@ -82,6 +82,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=<YOUR_APP_ID>;
 ## Firebase 初期化と Firebase App オブジェクトを作成する
 
 ```Javascript
+// lib/initFirebase.ts
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
@@ -109,8 +110,6 @@ const app = getFirebaseApp();
 // FirebaseAppに関連付けられたAuthインスタンスを取得
 export const auth = getAuth(app);
 ```
-
-{: file="lib/initFirebase.ts" }
 
 ## ログイン関数作成
 
@@ -182,6 +181,7 @@ onAuthStateChanged(auth: Auth, nextOrObserver: NextOrObserver<User>): Unsubscrib
 `useFirebaseAuth()`関数を作成する
 
 ```JavaScript
+// hooks/useFirebaseAuth.ts
 import { useState, useEffect } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
@@ -286,13 +286,12 @@ export default function useFirebaseAuth() {
 }
 ```
 
-{: file="hooks/useFirebaseAuth.ts" }
-
 ## user context を作成する
 
 ユーザー情報を app 内で共有するため、`AuthContext` を作成する
 
 ```JavaScript
+// context/AuthContext.tsx
 import { createContext, useContext } from "react";
 import useFirebaseAuth from "hooks/useFirebaseAuth";
 import { User } from "firebase/auth";
@@ -326,11 +325,10 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
 export const useAuthContext = () => useContext(AuthCtx);
 ```
 
-{: file="context/AuthContext.tsx" }
-
 context を全 app 範囲内で適用できるようにする。
 
 ```JavaScript
+// pages/_app.tsx
 import type { AppProps } from "next/app";
 
 import "../styles/globals.css";
@@ -344,8 +342,6 @@ export default function App({ Component, pageProps }: AppProps) {
   );
 }
 ```
-
-{: file="pages/\_app.tsx" }
 
 ## ログイン必要なページ内で、ユーザーログイン状況を確認する
 
