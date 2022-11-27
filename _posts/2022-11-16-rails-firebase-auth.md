@@ -97,7 +97,7 @@ JWT ライブラリは、ruby では [ruby-jwt](https://github.com/jwt/ruby-jwt)
 <details> 
 <summary>検証に利用可能なGem</summary>
 
-<pre style="background-color:white;">
+<pre style="background-color:whitesmoke;">
 1. Gem 'firebase-admin-sdk-ruby'
 
 こちらは ボランティアたちが作った Ruby 用 Firebase-admin-sdk。認証以外のユーザー管理機能などもあるので、公式 SDK の代替案として良いと思うけど、まだ alpha 版の段階で、プロダクションでの使用はまだ推奨されていない。
@@ -135,10 +135,8 @@ Redis の利用も必須。
 
 検証内容は三つある。 トークン のヘッダー、ペイロードと署名。
 
-<details> 
-<summary>検証内容一覧</summary>
+### 検証内容一覧
 
-<pre style="background-color:white;">
 - ID Token Header
 
   - alg(Algorithm): 署名作成のアルゴリズムは "RS256"であること
@@ -154,9 +152,6 @@ Redis の利用も必須。
 
 - ID Token Signature
   - 最後に、[Google 公開鍵証明書](https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com)サイトから、`kid`と関連する証明書を取得し、公開鍵を生成して、署名の有効性を検証する
-</pre>
-
-</details>
 
 ここで特に注意必要なのは、token を**２回 decode する必要**があること。
 

@@ -80,7 +80,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=<YOUR_APP_ID>;
 
 ## Firebase 初期化と Firebase App オブジェクトを作成する
 
-```TypeScript
+```javascript
 // lib/initFirebase.ts
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -114,7 +114,7 @@ export const auth = getAuth(app);
 
 Firebase が提供する`GoogleAuthProvider`と`signInWithPopup`を利用する
 
-```TypeScript
+```javascript
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useRouter } from "next/router";
 
@@ -139,7 +139,7 @@ const loginWithGoogle = async () => {
 
 - `user`から取得できる情報
 
-  ```TypeScript
+  ```javascript
   displayName: string | null; // ユーザー表示名
   email: string | null; // ユーザーメール
   phoneNumber: string | null; // ユーザー電話番号
@@ -149,7 +149,7 @@ const loginWithGoogle = async () => {
 
 ちなみに、Google ログインページへの遷移を Redirect にしたいなら、`signInWithRedirect`を利用する
 
-```TypeScript
+```javascript
 import { signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
 
 const loginWithGoogle = async () => {
@@ -170,7 +170,7 @@ Firebase が提供する`onAuthStateChanged`関数を使って、ユーザーロ
 
 `onAuthStateChanged`関数の説明
 
-```TypeScript
+```javascript
 // Adds an observer for changes to the user's sign-in state.
 // @param auth — The Auth instance.
 // @param nextOrObserver — callback triggered on change.
@@ -179,7 +179,7 @@ onAuthStateChanged(auth: Auth, nextOrObserver: NextOrObserver<User>): Unsubscrib
 
 `useFirebaseAuth()`関数を作成する
 
-```TypeScript
+```javascript
 // hooks/useFirebaseAuth.ts
 import { useState, useEffect } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
@@ -212,7 +212,7 @@ export default function useFirebaseAuth() {
 
 ## ログアウト関数追加
 
-```TypeScript
+```javascript
 const clear = () => {
   setCurrentUser(null);
   setLoading(false);
@@ -223,7 +223,7 @@ const logout = () => signOut(auth).then(clear);
 
 `useFirebaseAuth()`の全体像
 
-```TypeScript
+```javascript
 import { useState, useEffect } from "react";
 import {
   User,
@@ -289,7 +289,7 @@ export default function useFirebaseAuth() {
 
 ユーザー情報を app 内で共有するため、`AuthContext` を作成する
 
-```TypeScript
+```javascript
 // context/AuthContext.tsx
 import { createContext, useContext } from "react";
 import useFirebaseAuth from "hooks/useFirebaseAuth";
@@ -326,7 +326,7 @@ export const useAuthContext = () => useContext(AuthCtx);
 
 context を全 app 範囲内で適用できるようにする。
 
-```TypeScript
+```javascript
 // pages/_app.tsx
 import type { AppProps } from "next/app";
 
@@ -344,7 +344,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
 ## ログイン必要なページ内で、ユーザーログイン状況を確認する
 
-```TypeScript
+```javascript
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useAuthContext } from "../context/AuthContext";
@@ -368,7 +368,7 @@ export default function ProtectedPage() {
 
 user オブジェクトは`getIdToken`メソッドを使って、Firebase が発行した idToken を取得できる。
 
-```TypeScript
+```javascript
 /**
   * Returns a JSON Web Token (JWT) used to identify the user to a Firebase service.
   *
@@ -383,7 +383,7 @@ getIdToken(forceRefresh?: boolean): Promise<string>;
 
 axios の使用方法についてはここで省略。
 
-```TypeScript
+```javascript
 import axios from "axios";
 
 import useFirebaseAuth from "hooks/useFirebaseAuth";
