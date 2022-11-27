@@ -1,7 +1,7 @@
 ---
 title: Rails + Next.js + Firebase V9 Authentication で認証付きのCRUDアプリを作る
 category: "Rails"
-tags: [React, Next.js, Rails, API, Firebase, Typescript]
+tags: [React, Next.js, Rails, API, Firebase, TypeScript]
 ---
 
 ソースコード：[Backend: Rails API](https://github.com/lei900/rails-fairebase-auth)、[Frontend: Next.js](https://github.com/lei900/rails-fairebase-auth)
@@ -37,6 +37,7 @@ tags: [React, Next.js, Rails, API, Firebase, Typescript]
 <details> 
 <summary>実装でハマった話</summary>
 
+<pre style="background-color:white;">
 Firebase Authentication を実装したところ、Auth0 の時と同じ、実装の仕組みやコードの意図が理解できず、一時的ハマった。
 
 ちょっと焦っていたところ、この動画チュートリアルに救われた。
@@ -52,6 +53,7 @@ Firebase Authentication を実装したところ、Auth0 の時と同じ、実�
 その後、検索キーワードを変えて、他の記事も見つけて、ようやく Rails 側のコードも理解できるようになった。
 
 コードの全体流れが理解できたので、参照したソースコードを自分なりに少し書き換えてみた。自分の理解はメモとして整理したいと思う。
+</pre>
 
 </details>
 
@@ -481,6 +483,7 @@ JWT ライブラリは、ruby では [ruby-jwt](https://github.com/jwt/ruby-jwt)
 <details> 
 <summary>検証に利用可能なGem</summary>
 
+<pre style="background-color:white;">
 1. Gem 'firebase-admin-sdk-ruby'
 
 こちらは ボランティアたちが作った Ruby 用 Firebase-admin-sdk。認証以外のユーザー管理機能などもあるので、公式 SDK の代替案として良いと思うけど、まだ alpha 版の段階で、プロダクションでの使用はまだ推奨されていない。
@@ -508,6 +511,7 @@ Redis の利用も必須。
 ※ まだベタ版で、最近は更新されていないよう。
 
 [firebase-auth-rails](https://github.com/penguinwokrs/firebase-auth-rails)
+</pre>
 
 </details>
 
@@ -520,6 +524,7 @@ Redis の利用も必須。
 <details> 
 <summary>検証内容一覧</summary>
 
+<pre style="background-color:white;">
 - ID Token Header
 
   - alg(Algorithm): 署名作成のアルゴリズムは "RS256"であること
@@ -535,6 +540,7 @@ Redis の利用も必須。
 
 - ID Token Signature
   - 最後に、[Google 公開鍵証明書](https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com)サイトから、`kid`と関連する証明書を取得し、公開鍵を生成して、署名の有効性を検証する
+</pre>
 
 </details>
 
