@@ -173,7 +173,7 @@ token 署名を検証するための公開鍵を特定するには、token ヘ�
 
 1. `rails new my-app —api`
 2. gem を追加する。
-   `jwt`、[`rack-cors`](https://github.com/cyu/rack-cors)、[`dotenv-rails`](<(https://github.com/bkeepers/dotenv)>)
+   `jwt`、[`rack-cors`](https://github.com/cyu/rack-cors)、[`dotenv-rails`](https://github.com/bkeepers/dotenv)
 3. `config/initializers/cors.rb`設定
 
 ```ruby
