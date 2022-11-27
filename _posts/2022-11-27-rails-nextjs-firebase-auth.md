@@ -6,14 +6,14 @@ tags: [React, Next.js, Rails, API, Firebase, Typescript]
 
 ソースコード：[Backend: Rails API](https://github.com/lei900/rails-fairebase-auth)、[Frontend: Next.js](https://github.com/lei900/rails-fairebase-auth)
 
-デモページ：https://next-firebase-auth-sample-seven.vercel.app/
+デモページ：[next-firebase-auth-sample-app](https://next-firebase-auth-sample-seven.vercel.app/)
 
 ### 利用技術
 
 フロントエンド
 
 - Next.js
-- Typescript
+- TypeScript
 - Tailwind CSS
 
 バックエンド
@@ -43,7 +43,7 @@ Firebase Authentication を実装したところ、Auth0 の時と同じ、実�
 
 [NextJS Firebase Auth Tutorial • How to Authenticate Users for Your App](https://www.youtube.com/watch?v=BQrE98bP6m4)
 
-今ままで参考にした記事はちょっと古いので、公式の記述と一致しないコードもあり、この動画で使用している Firebase JavaScript SDK は最新の V9 バージョンで助かった。
+今ままで参考にした記事はちょっと古いので、公式の記述と一致しないコードもあり、この動画で使用している Firebase SDK は最新の V9 バージョンで助かった。
 
 また、JWT や認証の流れもわかりやすく説明されており、おかげでなんとなく仕組みがわかるようになった。
 
@@ -102,7 +102,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=<YOUR_APP_ID>;
 
 ## Firebase 初期化と Firebase App オブジェクトを作成する
 
-```javascript
+```Typescript
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
@@ -137,7 +137,7 @@ export const auth = getAuth(app);
 
 Firebase が提供する`GoogleAuthProvider`と`signInWithPopup`を利用する
 
-```javascript
+```Typescript
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useRouter } from "next/router";
 
@@ -162,7 +162,7 @@ const loginWithGoogle = async () => {
 
 - `user`から取得できる情報
 
-  ```javascript
+  ```Typescript
   displayName: string | null; // ユーザー表示名
   email: string | null; // ユーザーメール
   phoneNumber: string | null; // ユーザー電話番号
@@ -172,7 +172,7 @@ const loginWithGoogle = async () => {
 
 ちなみに、Google ログインページへの遷移を Redirect にしたいなら、`signInWithRedirect`を利用する
 
-```javascript
+```Typescript
 import { signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
 
 const loginWithGoogle = async () => {
@@ -202,7 +202,7 @@ onAuthStateChanged(auth: Auth, nextOrObserver: NextOrObserver<User>): Unsubscrib
 
 `useFirebaseAuth()`関数を作成する
 
-```javascript
+```Typescript
 import { useState, useEffect } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
@@ -234,7 +234,7 @@ export default function useFirebaseAuth() {
 
 ## ログアウト関数追加
 
-```javascript
+```Typescript
 const clear = () => {
   setCurrentUser(null);
   setLoading(false);
@@ -245,7 +245,7 @@ const logout = () => signOut(auth).then(clear);
 
 `useFirebaseAuth()`の全体像
 
-```javascript
+```Typescript
 import { useState, useEffect } from "react";
 import {
   User,
@@ -313,7 +313,7 @@ export default function useFirebaseAuth() {
 
 ユーザー情報を app 内で共有するため、`AuthContext` を作成する
 
-```javascript
+```Typescript
 import { createContext, useContext } from "react";
 import useFirebaseAuth from "hooks/useFirebaseAuth";
 import { User } from "firebase/auth";
@@ -351,7 +351,7 @@ export const useAuthContext = () => useContext(AuthCtx);
 
 context を全 app 範囲内で適用できるようにする。
 
-```javascript
+```Typescript
 import type { AppProps } from "next/app";
 
 import "../styles/globals.css";
@@ -370,7 +370,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
 ## ログイン必要なページ内で、ユーザーログイン状況を確認する
 
-```javascript
+```Typescript
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useAuthContext } from "../context/AuthContext";
@@ -394,7 +394,7 @@ export default function ProtectedPage() {
 
 user オブジェクトは`getIdToken`メソッドを使って、Firebase が発行した idToken を取得できる。
 
-```Javascript
+```Typescript
 /**
   * Returns a JSON Web Token (JWT) used to identify the user to a Firebase service.
   *
@@ -409,7 +409,7 @@ getIdToken(forceRefresh?: boolean): Promise<string>;
 
 axios の使用方法についてはここで省略。
 
-```javascript
+```Typescript
 import axios from "axios";
 
 import useFirebaseAuth from "hooks/useFirebaseAuth";
@@ -818,12 +818,12 @@ end
 
 取得した payload 内のユーザー情報を使って、新規ユーザーの登録などができる。
 
-### 今後の実装予定
+### 今後の課題
 
 - Google 公開鍵証明書を cache する
 - 匿名認証
 - 他のソーシャルログイン(Twitter, line など)
-- フロントエンド側のパフォーマンス改善
+- フロントエンド側のコードリファクタ、パフォーマンス改善
 
 ### 参考になったリソース
 
