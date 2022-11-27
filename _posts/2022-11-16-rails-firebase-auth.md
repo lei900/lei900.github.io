@@ -34,29 +34,6 @@ tags: [React, Next.js, Rails, API, Firebase, TypeScript]
 
 参照：[ちょっとでもセキュリティに自信がないなら、 Firebase Authentication を検討しよう](https://mizchi.dev/202008172159-firebase-authentication)
 
-<details> 
-<summary>実装でハマった話</summary>
-
-<pre style="background-color:white;">
-Firebase Authentication を実装したところ、Auth0 の時と同じ、実装の仕組みやコードの意図が理解できず、一時的ハマった。
-
-ちょっと焦っていたところ、この動画チュートリアルに救われた。
-
-[NextJS Firebase Auth Tutorial • How to Authenticate Users for Your App](https://www.youtube.com/watch?v=BQrE98bP6m4)
-
-今ままで参考にした記事はちょっと古いので、公式の記述と一致しないコードもあり、この動画で使用している Firebase SDK は最新の V9 バージョンで助かった。
-
-また、JWT や認証の流れもわかりやすく説明されており、おかげでなんとなく仕組みがわかるようになった。
-
-今回も、Auth0 の時も、コードが理解できなかったのは、そもそも JWT や認証の仕組みが全然わかっていないからだとわかった。(React Context API についての理解不足も原因の一つ..)
-
-その後、検索キーワードを変えて、他の記事も見つけて、ようやく Rails 側のコードも理解できるようになった。
-
-コードの全体流れが理解できたので、参照したソースコードを自分なりに少し書き換えてみた。自分の理解はメモとして整理したいと思う。
-</pre>
-
-</details>
-
 # 認証機能全体の流れ
 
 1.  画面上のログインボタン押して、Google ログイン画面に遷移する。遷移形式は popup か redirect。
@@ -94,40 +71,11 @@ JWT ライブラリは、ruby では [ruby-jwt](https://github.com/jwt/ruby-jwt)
 
 ※ 検証ロジックは自前で実装以外に、gem を使うなど他の選択肢もある。関連記事もあるので、詳細はここで省略。
 
-<details> 
-<summary>検証に利用可能なGem</summary>
+1. [firebase-admin-sdk-ruby](https://github.com/cheddar-me/firebase-admin-sdk-ruby)
 
-<pre style="background-color:whitesmoke;">
-1. Gem 'firebase-admin-sdk-ruby'
+2. [firebase_id_token](https://github.com/fschuindt/firebase_id_token)
 
-こちらは ボランティアたちが作った Ruby 用 Firebase-admin-sdk。認証以外のユーザー管理機能などもあるので、公式 SDK の代替案として良いと思うけど、まだ alpha 版の段階で、プロダクションでの使用はまだ推奨されていない。
-
-> This gem is currently in alpha and not recommended for production use (yet).
-
-自前で実装しても、ソースコードが大変参考になると思う。
-
-[firebase-admin-sdk-ruby](https://github.com/cheddar-me/firebase-admin-sdk-ruby)
-
-2. Gem 'firebase_id_token'
-
-Firebase ID token を検証する用の gem で、直近でも更新があり、良さそうな感じ。
-
-検証に必要な Google 公開鍵証明書を Redis で保存するので、Redis の利用が必須になる。
-
-[firebase_id_token](https://github.com/fschuindt/firebase_id_token)
-
-3. Gem 'firebase-auth-rails'を使う
-
-こちらの gem は firebase_id_token をベースにしたもの。利用方法はさらに簡単になる。
-
-Redis の利用も必須。
-
-※ まだベタ版で、最近は更新されていないよう。
-
-[firebase-auth-rails](https://github.com/penguinwokrs/firebase-auth-rails)
-</pre>
-
-</details>
+3. [firebase-auth-rails](https://github.com/penguinwokrs/firebase-auth-rails)
 
 ## 検証の流れについて
 
