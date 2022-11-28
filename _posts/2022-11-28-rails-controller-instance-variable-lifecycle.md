@@ -30,8 +30,7 @@ end
 
 気になるのは、ここの`||=`演算子。
 
-> a ||= xxx
-> 「||」演算子の自己代入演算子。a が 偽 か 未定義 なら a に xxx を代入する、という意味になります。
+> `a ||= xxx` > `「||」`演算子の自己代入演算子。a が 偽 か 未定義 なら a に xxx を代入する、という意味になります。
 
 ```ruby
 @_current_user ||= ApiKey.active.find_by(access_token: token)&.user
@@ -81,6 +80,7 @@ Rails Tutorial の説明によると、ここの`current_user`は同じリクエ
 それなら、ユーザーからリクエストが来るとき、Rails は実際にどう対応しているのか。
 
 調べたら、下記のリソースが見つけた。
+
 [The Lifecycle of a Request](https://blog.skylight.io/the-lifecycle-of-a-request/)
 
 [Storing state across requests from the same user](https://stackoverflow.com/questions/18006097/storing-state-across-requests-from-the-same-user)
@@ -89,23 +89,19 @@ Rails Tutorial の説明によると、ここの`current_user`は同じリクエ
 
 そして、`get '/posts'`というリクエストが来るとき、Rails の対応は簡単にまとめると、こんな感じになる
 
-1. `controller = PostsController.new`で PostsController のインスタンスが作成される。
-
-この controller には、三つのインスタンス変数が持つ - `@request`、`@response`、`@params`
+1. `controller = PostsController.new`で PostsController のインスタンスが作成される。 この controller には、三つのインスタンス変数が持つ - `@request`、`@response`、`@params`
 
 2. controller は`index`アクションを実行する。
 
 3. もし`index`アクションで view テンプレート を render するなら、controller が持つインスタンス変数が view のインスタンスにコピーして渡される。
 
-view インスタンスというのは、そのテンプレートの`self`。
+4. view インスタンスというのは、そのテンプレートの`self`。view ファイル内で使う変数は view インスタンスが controller または他の view インスタンスらコピした変数。
 
-view ファイル内で使う変数は view インスタンスが controller または他の view インスタンスらコピした変数。
+5. `index`アクションの内容を実行完了後、controller インスタンスの任務が完了したので、そのまま廃棄される
 
-4. `index`アクションの内容を実行完了後、controller インスタンスの任務が完了したので、そのまま廃棄される
+6. API の場合だと、もし最後の実行内容は JSON 形式のレスポンスを返すことなら、それを返した時点で、このリクエストの対応が完了になったので、controller インスタンスが捨てられる。
 
-   API の場合だと、もし最後の実行内容は JSON 形式のレスポンスを返すことなら、それを返した時点で、このリクエストの対応が完了になったので、controller インスタンスが捨てられる。
-
-5. 次のリクエストが来る時、また新しい controller インスタンスが作成られ、そのリクエストを対応する。
+7. 次のリクエストが来る時、また新しい controller インスタンスが作成られ、そのリクエストを対応する。
 
 ## Rails controller のインスタンス変数のスコープとライフサイクル
 
