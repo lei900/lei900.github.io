@@ -312,7 +312,7 @@ const { currentUser, loading, loginWithGoogle, logout } = useFirebaseAuth();
 
 const AuthContext: AuthContext = {
   currentUser: currentUser,
-  loading: true,
+  loading: loading,
   loginWithGoogle: loginWithGoogle,
   logout: logout,
 };
