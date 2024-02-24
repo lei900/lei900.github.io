@@ -23,10 +23,10 @@ timezone: Asia/Tokyo
 
 title: Lei's Notebook # the main title
 
-tagline: Learning journals about programing # it will display as the sub-title
+tagline: Journals about programing # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
-  エンジニア一年目。仕事で主にTypescript, Node.js, MongoDBを使っている。
+  エンジニア2年目。仕事で主にTypescript, Node.js, MongoDBを使っている。
 
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
 url: "https://lei900.github.io"
