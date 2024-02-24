@@ -1,7 +1,7 @@
 ---
 title: ActiveModelでは`text`型は指定不可のことについて
 category: "Coding"
-tags: [Ruby on Rails, SQL, MySQL, PostgresSQL]
+tags: [Ruby on Rails, SQL, MySQL, PostgreSQL]
 ---
 
 今回のFormObjectでうっかり`body`のタイプを`text`に指定してしまい、`Unknown type :text`のエラーが出た。  
