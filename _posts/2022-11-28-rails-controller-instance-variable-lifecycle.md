@@ -1,6 +1,6 @@
 ---
 title: Railsのリクエストライフサイクルのについて
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby on Rails, API]
 ---
 

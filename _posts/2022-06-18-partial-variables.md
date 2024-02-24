@@ -1,6 +1,6 @@
 ---
 title:  パーシャルに渡す変数はなるべくローカル変数にした方が良い
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby, Ruby on Rails]
 ---
 

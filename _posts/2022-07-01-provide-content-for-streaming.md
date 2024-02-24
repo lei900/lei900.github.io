@@ -1,6 +1,6 @@
 ---
 title:  provide と content_for、Streaming(viewとlayoutの評価順)について
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby, Ruby on Rails]
 ---
 

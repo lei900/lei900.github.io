@@ -1,6 +1,6 @@
 ---
 title:  INDEX、複合INDEX、UNIQUE制約とUNIQUE INDEXについて
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby, Ruby on Rails, Database]
 ---
 

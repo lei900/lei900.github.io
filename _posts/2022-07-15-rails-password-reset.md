@@ -1,6 +1,6 @@
 ---
 title:  Deviseやsorceryを使わないやり方で、パスワードリセット機能の流れを理解する
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby, Ruby on Rails]
 ---
 

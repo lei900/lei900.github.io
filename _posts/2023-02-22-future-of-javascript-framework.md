@@ -1,6 +1,6 @@
 ---
 title: JavaScriptフレームワークの過去、現在と未来
-category: "JavaScript"
+category: "Coding"
 tags: [JavaScript, React, Next.js]
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Reactの条件付きレンダーで`&&`演算子使う時の注意点
-category: "React"
+category: "Coding"
 tags: [JavaScript, React]
 ---
 

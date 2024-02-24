@@ -1,6 +1,6 @@
 ---
 title: Readable Codeメモ：メソッド名や変数名を正しく選ぶ
-category: "Software Design"
+category: "Coding"
 tags: ["Better Code", Refactor, "Reading Notes"]
 ---
 

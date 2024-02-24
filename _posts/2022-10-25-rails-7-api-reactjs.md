@@ -1,6 +1,6 @@
 ---
 title: Rails 7 でReactを使う方法まとめ
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby on Rails, JavaScript, React]
 ---
 

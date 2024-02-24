@@ -1,6 +1,6 @@
 ---
 title: ReactのためのJavaScript簡単まとめ
-category: "JavaScript"
+category: "Coding"
 tags: [JavaScript, React]
 ---
 

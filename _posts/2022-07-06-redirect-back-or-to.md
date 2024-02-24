@@ -1,6 +1,6 @@
 ---
 title:  redirect_backとredirect_back_or_toについて
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby, Ruby on Rails]
 ---
 

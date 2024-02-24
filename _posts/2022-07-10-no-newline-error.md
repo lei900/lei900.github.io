@@ -1,6 +1,6 @@
 ---
 title:  No newline at end of fileエラーについて
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby, Ruby on Rails, UNIX]
 ---
 

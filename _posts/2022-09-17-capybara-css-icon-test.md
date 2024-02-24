@@ -1,6 +1,6 @@
 ---
 title: Capybaraでfontawesomeのiconリンクをテストする
-category: "Ruby on Rails"
+category: "Coding"
 tags: [RSpec, Ruby on Rails, Test, Capybara, CSS, Fontawesome]
 ---
 

@@ -1,6 +1,6 @@
 ---
 title:  Rails controllerの動きについて
-category: [Ruby on Rails]
+category: "Coding"
 tags: [Ruby, Ruby on Rails]
 ---
 

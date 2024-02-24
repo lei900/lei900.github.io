@@ -1,6 +1,6 @@
 ---
 title:  link_toメソッドでクエリパラメータを付与する
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby, Ruby on Rails]
 ---
 

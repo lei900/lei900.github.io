@@ -1,6 +1,6 @@
 ---
 title: insert_allやupdate_allを使って、SQLクエリの発行を削減する
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby on Rails, SQL, Database]
 ---
 

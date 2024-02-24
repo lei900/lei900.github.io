@@ -1,6 +1,6 @@
 ---
 title: 単一テーブル継承(STI)について
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby on Rails, Database]
 ---
 

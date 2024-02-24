@@ -1,6 +1,6 @@
 ---
 title:  replaceWith()とhtml()の違い
-category: "JavaScript"
+category: "Coding"
 tags: [JavaScript, jQuery, Ruby on Rails]
 ---
 

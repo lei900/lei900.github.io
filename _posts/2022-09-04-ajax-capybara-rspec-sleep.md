@@ -1,6 +1,6 @@
 ---
 title: Javascript処理を挟むテストの場合、Capybaraを待たせる必要
-category: "Ruby on Rails"
+category: "Coding"
 tags: [RSpec, Ruby on Rails, Test, Capybara, JavaScript]
 ---
 

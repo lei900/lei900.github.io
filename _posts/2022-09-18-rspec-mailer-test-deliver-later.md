@@ -1,6 +1,6 @@
 ---
 title: RSpecでdeliver_laterのメールをテストする方法
-category: "Ruby on Rails"
+category: "Coding"
 tags: [RSpec, Ruby on Rails, Test]
 ---
 

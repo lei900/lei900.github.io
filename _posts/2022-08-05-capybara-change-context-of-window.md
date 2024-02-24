@@ -1,6 +1,6 @@
 ---
 title: Capybaraで新しいwindowを指定するため、window contextを切り替える方法
-category: "Ruby on Rails"
+category: "Coding"
 tags: [RSpec, Ruby on Rails, Test, Capybara]
 ---
 

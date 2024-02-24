@@ -1,6 +1,6 @@
 ---
 title:  Missing Semester - The Shell
-category: "Linux"
+category: "Coding"
 tags: [Shell, Linux, MIT, Missing Semester]
 ---
 

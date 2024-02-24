@@ -1,6 +1,6 @@
 ---
 title: VSCodeでReact JSX内のhtmlタグを自動補完する
-category: "React"
+category: "Coding"
 tags: [JavaScript, React]
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: ActiveModelでは`text`型は指定不可のことについて
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby on Rails, SQL, MySQL, PostgresSQL]
 ---
 

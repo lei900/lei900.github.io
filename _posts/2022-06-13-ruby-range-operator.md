@@ -1,6 +1,6 @@
 ---
 title:  Rubyの範囲演算子は降順のイテレートに使えないこと
-category: "Ruby"
+category: "Coding"
 tags: [Ruby]
 ---
 

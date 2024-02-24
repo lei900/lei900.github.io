@@ -1,6 +1,6 @@
 ---
 title: Chromeが第三者アプリからのリンクを開けない状況について
-category: "Other"
+category: "Others"
 tags: [Mac, Chrome]
 ---
 

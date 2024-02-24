@@ -1,6 +1,6 @@
 ---
 title: Rails編 - Rails + Next.js + Firebase V9 Authentication で認証付きのCRUDアプリを作る
-category: "Rails"
+category: "Coding"
 tags: [React, Next.js, Rails, API, Firebase, TypeScript]
 ---
 

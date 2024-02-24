@@ -1,6 +1,6 @@
 ---
 title: Capybaraでheadless_chromeのスクリンサイズを設定する
-category: "Ruby on Rails"
+category: "Coding"
 tags: [RSpec, Ruby on Rails, Test, Capybara, Chrome]
 ---
 

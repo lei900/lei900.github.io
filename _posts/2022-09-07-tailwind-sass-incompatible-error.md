@@ -1,6 +1,6 @@
 ---
 title: Tailwindとsassの非互換問題の解決について
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby on Rails, css, tailwind, sass]
 ---
 

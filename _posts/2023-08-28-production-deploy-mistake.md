@@ -1,6 +1,6 @@
 ---
 title: '今日の反省: 本番反映前に絶対DBをバックアップしておくこと'
-category: "other"
+category: "Others"
 tags: [docker, PostgreSQL]
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: RailsのDelegated Typesで複数モデルを扱うフィード機能を作る
-category: "Ruby on Rails"
+category: "Coding"
 tags: [Ruby on Rails, Database]
 ---
 
