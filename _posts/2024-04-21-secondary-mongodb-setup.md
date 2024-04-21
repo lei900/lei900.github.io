@@ -330,7 +330,7 @@ rs.status()
   "attr":{
     "mechanism":"SCRAM-SHA-256","speculative":false,"principalName":"__system",
     "authenticationDatabase":"local",
-    "remote":"192.168.102.151:50362",
+    "remote":"192.168.1..4:50362",
     "extraInfo":{},
     "error":"AuthenticationFailed: SCRAM authentication failed, storedKey mismatch"
     }
