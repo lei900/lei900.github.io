@@ -213,7 +213,7 @@ rs.status()
 
 # Troubleshooting
 
-1. 新しいsecondary node追加時、以下のエラーが出る場合
+## 新しいsecondary node追加時、以下のエラーが出る場合
 
 ```bash
 rs.add("192.168.1.9:27020")
@@ -262,7 +262,7 @@ rs.reconfig(cfg, {force: true});
 
 ```
 
-2. データが同期できない
+## データが同期できない
 
 **可能性1：hostname resolve問題**
 
