@@ -25,8 +25,6 @@ tags: [MongoDB, replica set]
 
 新しいDBサーバーを構築し、MongoDBをインストールする。
 
-## MongoDBの設定ファイルを編集
-
 1. 新しいDBサーバーのMongoDBの設定ファイルを編集する。
 
 ```bash
