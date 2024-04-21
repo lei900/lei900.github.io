@@ -176,11 +176,13 @@ configTerm: 40
 ## 初期データ同期状態確認
 
 1.  secondary db 上でlog確認
+
 ```bash
 sudo tail -f  /var/log/mongodb/mongod.log
 ```
 
 2. primary db上で、新しいsecondary nodeの同期状況確認
+
 ```bash
 
 # 同期状況確認
