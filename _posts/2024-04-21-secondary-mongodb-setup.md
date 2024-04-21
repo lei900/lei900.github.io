@@ -4,7 +4,7 @@ category: "Coding"
 tags: [MongoDB, replica set]
 ---
 
-# 背景
+## 背景
 
 分散DBとして、もう一台のDBサーバーを構築し、新しいsecondary nodeとして既存のMongoDBのreplica setに追加する作業を行った。
 
@@ -19,9 +19,9 @@ tags: [MongoDB, replica set]
 - OS: AlmaLinux 8.5
 - MongoDB: 4.4.13
 
-# 作業手順
+## 作業手順
 
-## 分散サーバー上で新しいmongodb instance追加
+### 分散サーバー上で新しいmongodb instance追加
 
 新しいDBサーバーを構築し、MongoDBをインストールする。
 
@@ -85,7 +85,7 @@ sudo firewall-cmd --reload
 mongo --host 192.168.1.9 --port 27020
 ```
 
-## primaryサーバーに新しいsecondary nodeを追加
+### primaryサーバーに新しいsecondary nodeを追加
 
 1. bindIP追加のため、primaryサーバーの設定ファイルを編集する。DB再起動必要。
 
@@ -171,7 +171,7 @@ configTerm: 40
 } 
 ```
 
-## 初期データ同期状態確認
+### 初期データ同期状態確認
 
 1.  secondary db 上でlog確認
 
@@ -211,9 +211,9 @@ rs.status()
 
 ```
 
-# Troubleshooting
+## Troubleshooting
 
-## 新しいsecondary node追加時、以下のエラーが出る場合
+### 新しいsecondary node追加時、以下のエラーが出る場合
 
 ```bash
 rs.add("192.168.1.9:27020")
@@ -262,7 +262,7 @@ rs.reconfig(cfg, {force: true});
 
 ```
 
-## データが同期できない
+### データが同期できない
 
 **可能性1：hostname resolve問題**
 
