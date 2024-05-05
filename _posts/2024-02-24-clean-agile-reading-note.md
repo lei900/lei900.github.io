@@ -1,6 +1,6 @@
 ---
 title: 'Clean Agile 感想: アジャイルは速く進むことではない'
-category: "Coding"
+category: "Career"
 tags: [Agile, "Reading Notes", "Software Development", "Robert C. Martin"]
 ---
 
