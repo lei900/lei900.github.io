@@ -1,5 +1,5 @@
 ---
-title: "drain" event を使ってメモリリークを防ぐ
+title: '"drain" event を使ってメモリリークを防ぐ'
 category: "Coding"
 tags: ["JavaScript", "Node.js"]
 ---
