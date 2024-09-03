@@ -1,0 +1,473 @@
+<!doctype html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width, user-scalable=no initial-scale=1, shrink-to-fit=no, viewport-fit=cover" ><meta name="generator" content="Jekyll v4.3.3" /><meta property="og:title" content="insert_allやupdate_allを使って、SQLクエリの発行を削減する" /><meta property="og:locale" content="en" /><meta name="description" content="今回は東京都知事杯ハッカソンに参加して、二日間のチームワークの下で、なんと投票マッチングアプリのMVPが出来上がった。 ただ、小さいアプリだけどめっちゃSQL走っていると気がついたので、もっと改善できないかなと思った。" /><meta property="og:description" content="今回は東京都知事杯ハッカソンに参加して、二日間のチームワークの下で、なんと投票マッチングアプリのMVPが出来上がった。 ただ、小さいアプリだけどめっちゃSQL走っていると気がついたので、もっと改善できないかなと思った。" /><link rel="canonical" href="https://lei900.github.io/22/09/refactor-reduce-sql-query/" /><meta property="og:url" content="https://lei900.github.io/22/09/refactor-reduce-sql-query/" /><meta property="og:site_name" content="Lei’s Notebook" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2022-09-02T00:00:00+09:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="insert_allやupdate_allを使って、SQLクエリの発行を削減する" /><meta name="twitter:site" content="@Maize_2" /><meta name="google-site-verification" content="Ckq6Y4EgIySQx_ljVsvTT2Xv3mFkEKUrp3Z9QQ2bpPw" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-02-24T16:28:44+09:00","datePublished":"2022-09-02T00:00:00+09:00","description":"今回は東京都知事杯ハッカソンに参加して、二日間のチームワークの下で、なんと投票マッチングアプリのMVPが出来上がった。 ただ、小さいアプリだけどめっちゃSQL走っていると気がついたので、もっと改善できないかなと思った。","headline":"insert_allやupdate_allを使って、SQLクエリの発行を削減する","mainEntityOfPage":{"@type":"WebPage","@id":"https://lei900.github.io/22/09/refactor-reduce-sql-query/"},"url":"https://lei900.github.io/22/09/refactor-reduce-sql-query/"}</script><title>insert_allやupdate_allを使って、SQLクエリの発行を削減する | Lei's Notebook</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="Lei's Notebook"><meta name="application-name" content="Lei's Notebook"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="preconnect" href="https://cdnjs.cloudflare.com" ><link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" ><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="/assets/css/jekyll-theme-chirpy.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4.25.0/dist/tocbot.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loading-attribute-polyfill@2.1.1/dist/loading-attribute-polyfill.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/magnific-popup.min.css"> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return 'mode'; } static get MODE_ATTR() { return 'data-mode'; } static get DARK_MODE() { return 'dark'; } static get LIGHT_MODE() { return 'light'; } static get ID() { return 'mode-toggle'; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener('change', () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia('(prefers-color-scheme: dark)'); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { document.documentElement.setAttribute(ModeToggle.MODE_ATTR, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { document.documentElement.setAttribute(ModeToggle.MODE_ATTR, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { document.documentElement.removeAttribute(ModeToggle.MODE_ATTR); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage( { direction: ModeToggle.ID, message: this.modeStatus }, '*' ); } flipMode() { if (this.hasMode) { if (this.isSysDarkPrefer) { if (this.isLightMode) { this.clearMode(); } else { this.setLight(); } } else { if (this.isDarkMode) { this.clearMode(); } else { this.setDark(); } } } else { if (this.isSysDarkPrefer) { this.setLight(); } else { this.setDark(); } } this.notify(); } /* flipMode() */ } /* ModeToggle */ const modeToggle = new ModeToggle(); </script><body><aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end"><header class="profile-wrapper"> <a href="/" id="avatar" class="rounded-circle"><img src="https://pbs.twimg.com/profile_images/1517837311631040514/aCaLxlJ1_400x400.jpg" width="112" height="112" alt="avatar" onerror="this.style.display='none'"></a><h1 class="site-title"> <a href="/">Lei's Notebook</a></h1><p class="site-subtitle fst-italic mb-0">Journals about programing</p></header><nav class="flex-column flex-grow-1 w-100 ps-0"><ul class="nav"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream"></i> <span>CATEGORIES</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tag"></i> <span>TAGS</span> </a><li class="nav-item"> <a href="/archives/" class="nav-link"> <i class="fa-fw fas fa-archive"></i> <span>ARCHIVES</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info-circle"></i> <span>ABOUT</span> </a></ul></nav><div class="sidebar-bottom d-flex flex-wrap align-items-center w-100"> <button type="button" class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/lei900" aria-label="github" target="_blank" rel="noopener noreferrer" > <i class="fab fa-github"></i> </a> <a href="https://twitter.com/Maize_2" aria-label="twitter" target="_blank" rel="noopener noreferrer" > <i class="fab fa-twitter"></i> </a> <a href="javascript:location.href = 'mailto:' + ['mia.wang90','gmail.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></aside><div id="main-wrapper" class="d-flex justify-content-center"><div class="container d-flex flex-column px-xxl-5"><header id="topbar-wrapper" aria-label="Top Bar"><div id="topbar" class="d-flex align-items-center justify-content-between px-lg-3 h-100" ><nav id="breadcrumb" aria-label="Breadcrumb"> <span> <a href="/">Home</a> </span> <span>insert_allやupdate_allを使って、SQLクエリの発行を削減する</span></nav><button type="button" id="sidebar-trigger" class="btn btn-link"> <i class="fas fa-bars fa-fw"></i> </button><div id="topbar-title"> Post</div><button type="button" id="search-trigger" class="btn btn-link"> <i class="fas fa-search fa-fw"></i> </button> <search class="align-items-center ms-3 ms-lg-0"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..." > </search> <button type="button" class="btn btn-link text-decoration-none" id="search-cancel">Cancel</button></div></header><div class="row flex-grow-1"><main aria-label="Main Content" class="col-12 col-lg-11 col-xl-9 px-md-4"><article class="px-1"><header><h1 data-toc-skip>insert_allやupdate_allを使って、SQLクエリの発行を削減する</h1><div class="post-meta text-muted"> <span> Posted <time data-ts="1662044400" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Sep 2, 2022 </time> </span> <span> Updated <time data-ts="1708759724" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Feb 24, 2024 </time> </span><div class="d-flex justify-content-between"> <span> By <em> <a href="https://twitter.com/maize_2">Lei's Notebook</a> </em> </span> <span class="readtime" data-bs-toggle="tooltip" data-bs-placement="bottom" title="5455 words" > <em>30 min</em> read</span></div></div></header><div class="content"><p>今回は東京都知事杯ハッカソンに参加して、二日間のチームワークの下で、なんと投票マッチングアプリのMVPが出来上がった。<br /> ただ、小さいアプリだけどめっちゃSQL走っていると気がついたので、もっと改善できないかなと思った。</p><p>コード全体をもう一度整理して、特にSQL大量発行する箇所に目を留めた。</p><ul><li>ユーザーと政党テーブル、質問テーブルを紐付けるところ<li>ユーザーの選択回答を保存するところ<li>政党ポイントを計算するところ<li>政党マッチング結果一覧を表示するところ</ul><p>以上の箇所について、</p><ul><li>紐付けるタイミングを変更できないか、まだ必要のない紐付けだったら一旦保留したら？<li>紐付けは個々のレコードではなく、一括でできないか?<li>レコードのupdateは個別で行うより、一括で更新できないか?<li>計算ロジックは、個々の政党レコードを取得して、一つ一つ比較して計算するよりは、二つグループに分けて一括更新するのが可能か?</ul><p>と考えながら、コードを書き直してみた。</p><p>結果的に、全体的なSQLクエリ発行はほぼ8割程度削減できた！</p><h1 id="修正前後の比較">修正前後の比較</h1><h2 id="ユーザーと政党の紐付け"><span class="me-2">ユーザーと政党の紐付け</span><a href="#ユーザーと政党の紐付け" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>元々のコードは<code class="language-plaintext highlighter-rouge">each</code>メソッドを使って、政党レコードを一つ一つ取得して、中間テーブルのレコードを新規作成する形式で、政党の数分でSQL文が発行される。</p><div class="language-ruby highlighter-rouge"><div class="code-header"> <span data-label-text="Ruby"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre><td class="rouge-code"><pre>  <span class="k">def</span> <span class="nf">create_party_relation</span>
+    <span class="n">parties</span> <span class="o">=</span> <span class="no">Party</span><span class="p">.</span><span class="nf">all</span>
+    <span class="n">parties</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">party</span><span class="o">|</span>
+      <span class="no">UserParty</span><span class="p">.</span><span class="nf">create!</span><span class="p">(</span><span class="ss">user_id: </span><span class="nb">self</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">party_id: </span><span class="n">party</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">point: </span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+</pre></table></code></div></div><details> <summary>修正前SQLクエリ発行状況</summary><pre style="background-color:whitesmoke;">
+Party Load (0.2ms)  SELECT "parties".* FROM "parties"
+  ↳ app/models/user.rb:17:in `party_relation'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  Party Load (0.2ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 1], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  UserParty Create (0.5ms)  INSERT INTO "user_parties" ("user_id", "party_id", "point", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 70], ["party_id", 1], ["point", 0], ["created_at", "2022-09-01 13:19:53.973751"], ["updated_at", "2022-09-01 13:19:53.973751"]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.7ms)  COMMIT
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.2ms)  BEGIN
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  UserParty Create (0.3ms)  INSERT INTO "user_parties" ("user_id", "party_id", "point", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 70], ["party_id", 2], ["point", 0], ["created_at", "2022-09-01 13:19:53.983360"], ["updated_at", "2022-09-01 13:19:53.983360"]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.4ms)  COMMIT
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 3], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  UserParty Create (0.3ms)  INSERT INTO "user_parties" ("user_id", "party_id", "point", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 70], ["party_id", 3], ["point", 0], ["created_at", "2022-09-01 13:19:53.989469"], ["updated_at", "2022-09-01 13:19:53.989469"]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.4ms)  COMMIT
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.2ms)  BEGIN
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  User Load (0.4ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  Party Load (0.2ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 4], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  UserParty Create (0.3ms)  INSERT INTO "user_parties" ("user_id", "party_id", "point", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 70], ["party_id", 4], ["point", 0], ["created_at", "2022-09-01 13:19:53.998626"], ["updated_at", "2022-09-01 13:19:53.998626"]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.5ms)  COMMIT
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.2ms)  BEGIN
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 5], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  UserParty Create (0.4ms)  INSERT INTO "user_parties" ("user_id", "party_id", "point", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 70], ["party_id", 5], ["point", 0], ["created_at", "2022-09-01 13:19:54.005710"], ["updated_at", "2022-09-01 13:19:54.005710"]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.5ms)  COMMIT
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  Party Load (0.2ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 6], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  UserParty Create (0.3ms)  INSERT INTO "user_parties" ("user_id", "party_id", "point", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 70], ["party_id", 6], ["point", 0], ["created_at", "2022-09-01 13:19:54.012852"], ["updated_at", "2022-09-01 13:19:54.012852"]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.5ms)  COMMIT
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  Party Load (0.2ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 7], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  UserParty Create (0.3ms)  INSERT INTO "user_parties" ("user_id", "party_id", "point", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 70], ["party_id", 7], ["point", 0], ["created_at", "2022-09-01 13:19:54.019201"], ["updated_at", "2022-09-01 13:19:54.019201"]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.4ms)  COMMIT
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 8], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  UserParty Create (0.4ms)  INSERT INTO "user_parties" ("user_id", "party_id", "point", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 70], ["party_id", 8], ["point", 0], ["created_at", "2022-09-01 13:19:54.026128"], ["updated_at", "2022-09-01 13:19:54.026128"]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.4ms)  COMMIT
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 9], ["LIMIT", 1]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  UserParty Create (0.3ms)  INSERT INTO "user_parties" ("user_id", "party_id", "point", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 70], ["party_id", 9], ["point", 0], ["created_at", "2022-09-01 13:19:54.033751"], ["updated_at", "2022-09-01 13:19:54.033751"]]
+  ↳ app/models/user.rb:18:in `block in party_relation'
+  TRANSACTION (0.5ms)  COMMIT
+  ↳ app/models/user.rb:18:in `block in party_relation'
+</pre></details><p>改善後のやり方は<code class="language-plaintext highlighter-rouge">pluck</code>を使って、政党IDを一括取得して、｀user.user_parties｀の中身となるデータを配列形式で一括生成する。<br /> そして<code class="language-plaintext highlighter-rouge">inser_all</code>メソッドを使ってUserPartyテーブルに一括挿入DBへ挿入する。<br /> これでSQLクエリが一回で済む。</p><div class="language-ruby highlighter-rouge"><div class="code-header"> <span data-label-text="Ruby"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre>  <span class="k">def</span> <span class="nf">create_party_relation</span>
+    <span class="n">record_array</span> <span class="o">=</span> <span class="no">Party</span><span class="p">.</span><span class="nf">pluck</span><span class="p">(</span><span class="ss">:id</span><span class="p">).</span><span class="nf">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">party_id</span><span class="o">|</span> <span class="p">{</span> <span class="ss">user_id: </span><span class="nb">self</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> 
+                                                        <span class="ss">party_id: </span><span class="n">party_id</span><span class="p">,</span> <span class="ss">point: </span><span class="mi">0</span> <span class="p">}</span> <span class="p">}</span>
+    <span class="no">UserParty</span><span class="p">.</span><span class="nf">insert_all</span><span class="p">(</span><span class="n">record_array</span><span class="p">)</span>
+  <span class="k">end</span>
+</pre></table></code></div></div><details> <summary>修正後SQLクエリ発行状況</summary><pre style="background-color:whitesmoke;">
+Party Pluck (0.2ms)  SELECT "parties"."id" FROM "parties"
+  ↳ app/models/user.rb:14:in `create_party_relation'
+  UserParty Bulk Insert (1.1ms)  INSERT INTO "user_parties" ("user_id","party_id","point","created_at","updated_at") VALUES (60, 1, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 2, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 3, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 4, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 5, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 6, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 7, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 8, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (60, 9, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) ON CONFLICT  DO NOTHING RETURNING "id"
+  ↳ app/models/user.rb:15:in `create_party_relation'
+</pre></details><h2 id="ユーザーと質問の紐付け"><span class="me-2">ユーザーと質問の紐付け</span><a href="#ユーザーと質問の紐付け" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>元々ゲストユーザーが作成された時点で、ユーザーを全部の質問と紐付けるというやり方だったけど、<br /> そもそも最初から全部の質問と紐づける必要があるのか、と疑問に感じた。 もし今後ユーザーが質問をskipする機能を追加したら、その質問と紐づける自体も必要がなくなる。</p><p>元々のコード</p><div class="language-ruby highlighter-rouge"><div class="code-header"> <span data-label-text="Ruby"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="c1"># ユーザーと全部の質問を紐付けるつもり</span>
+  <span class="k">def</span> <span class="nf">question_relation</span>
+    <span class="n">questions</span> <span class="o">=</span> <span class="no">Question</span><span class="p">.</span><span class="nf">all</span>
+    <span class="n">questions</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">question</span><span class="o">|</span>
+      <span class="no">UserQuestion</span><span class="p">.</span><span class="nf">create!</span><span class="p">(</span><span class="ss">user_id: </span><span class="nb">self</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">question_id: </span><span class="n">question</span><span class="p">.</span><span class="nf">id</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+</pre></table></code></div></div><p>これも質問の数分でSQLクエリが発行される。</p><details> <summary>修正前SQLクエリ発行状況</summary><pre style="background-color:whitesmoke;">
+ Question Load (0.2ms)  SELECT "questions".* FROM "questions"
+  ↳ app/models/user.rb:24:in `question_relation'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 69], ["LIMIT", 1]]
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  Question Load (0.1ms)  SELECT "questions".* FROM "questions" WHERE "questions"."id" = $1 LIMIT $2  [["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  UserQuestion Create (0.5ms)  INSERT INTO "user_questions" ("user_id", "question_id", "result", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 69], ["question_id", 2], ["result", nil], ["created_at", "2022-09-01 13:16:31.900255"], ["updated_at", "2022-09-01 13:16:31.900255"]]
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  TRANSACTION (40.2ms)  COMMIT
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 69], ["LIMIT", 1]]
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  Question Load (0.2ms)  SELECT "questions".* FROM "questions" WHERE "questions"."id" = $1 LIMIT $2  [["id", 3], ["LIMIT", 1]]
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  UserQuestion Create (0.4ms)  INSERT INTO "user_questions" ("user_id", "question_id", "result", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 69], ["question_id", 3], ["result", nil], ["created_at", "2022-09-01 13:16:31.955346"], ["updated_at", "2022-09-01 13:16:31.955346"]]
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  TRANSACTION (1.8ms)  COMMIT
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 69], ["LIMIT", 1]]
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  Question Load (0.1ms)  SELECT "questions".* FROM "questions" WHERE "questions"."id" = $1 LIMIT $2  [["id", 1], ["LIMIT", 1]]
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  UserQuestion Create (0.3ms)  INSERT INTO "user_questions" ("user_id", "question_id", "result", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 69], ["question_id", 1], ["result", nil], ["created_at", "2022-09-01 13:16:31.962690"], ["updated_at", "2022-09-01 13:16:31.962690"]]
+  ↳ app/models/user.rb:25:in `block in question_relation'
+  TRANSACTION (0.5ms)  COMMIT
+  ↳ app/models/user.rb:25:in `block in question_relation'
+</pre></details><p>もう一つのデメリットとしては、最初から全部の質問と紐づいて、後でユーザーが質問を答えたら、また質問レコードを取得して、データを更新する操作が必要。それで質問レコードを取得するクエリ自体も重複発行になる。</p><p>修正後のコードは、まず一括紐付けるのでなく、ユーザーが質問回答してから、該当の質問と紐付けるようにする。 ユーザーが選択した回答も紐付けと一緒に記録する。<br /> 修正後コード</p><div class="language-ruby highlighter-rouge"><div class="code-header"> <span data-label-text="Ruby"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>  <span class="k">def</span> <span class="nf">save_result</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+    <span class="n">user_questions</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">question_id: </span><span class="n">question</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">result: </span><span class="n">result</span><span class="p">)</span>
+  <span class="k">end</span>
+</pre></table></code></div></div><details> <summary>修正後SQLクエリ発行状況</summary><pre style="background-color:whitesmoke;">
+  Question Load (0.2ms)  SELECT "questions".* FROM "questions" WHERE "questions"."id" = $1 LIMIT $2  [["id", 1], ["LIMIT", 1]]
+  ↳ app/models/user.rb:19:in `save_result'
+  UserQuestion Create (0.5ms)  INSERT INTO "user_questions" ("user_id", "question_id", "result", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"  [["user_id", 60], ["question_id", 1], ["result", 0], ["created_at", "2022-09-01 11:57:34.573782"], ["updated_at", "2022-09-01 11:57:34.573782"]]
+  ↳ app/models/user.rb:19:in `save_result'
+  TRANSACTION (5.8ms)  COMMIT
+  ↳ app/models/user.rb:19:in `save_result'
+</pre></details><h2 id="政党ポイント計算メソッド修正"><span class="me-2">政党ポイント計算メソッド修正</span><a href="#政党ポイント計算メソッド修正" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>政党ポイント計算のロジックとしては、</p><ul><li>ユーザー選択が超賛成の議題に対して、政党意見が–<br /> 賛成の場合、該当政党との相性度+2点<br /> 反対の場合、相性度-1点<li>ユーザー選択が賛成の議題に対して、政党意見が–<br /> 賛成の場合、政党との相性度+1点<br /> 反対の場合、相性度-1点<li>ユーザー選択が反対の議題に対して、政党意見が–<br /> 賛成の場合、該当政党との相性度-1点<br /> 反対の場合、相性度+1点<li>ユーザー選択が無関心の議題に対して、政党との相性度が加減しない</ul><p>つまり、政党とユーザー意見が一致したら、加点になる、正反対だったら減点になること。</p><p>最初から政党を賛成派と反対派を分けて、データ更新したいつもりだったけど、 必要な参照データがuser_questionsテーブル、user_partiesテーブルとparty_quesionsテーブルの三つのテーブルに分散しているので、うまくデータを一括操作する方法が思い出さなかった。<br /> とりあえず、政党意見を一つ一つ取り出して、ユーザー意見と比較する方法にした。 作成したコードもややこしい感じで、チームメンバーに理解してもらうのが時間かかったそう。</p><details> <summary>修正前のコード</summary> 1. まずcontrollerのアクション内で、ユーザーと政党の中間テーブルuser_partiesからをユーザーと紐づいた政党レコードを一つ一つ取り出して、ポイント計算を行う<pre style="background-color:whitesmoke;">
+    current_user.user_parties.each do |user_party|
+      user_party.calculate_point(user_question)
+    end
+</pre>2. ポイント計算のメソッドの中身として、まず政党と質問の中間テーブルparty_questionsから政党意見を取得し、 そしてユーザー意見と比較して、一致したら、加点する;不一致だったら、減点する。<pre style="background-color:whitesmoke;">
+  def calculate_point(user_question)
+    # 政党意見を参照するため、party_questionsテーブルから政党を取得してopinionを参照する
+    party_questions = PartyQuestion.where(question_id: user_question.question_id)
+    party_question = party_questions.find_by(party_id: party_id)
+    # ユーザーの選択意見
+    user_result = user_question.result
+
+    #　ユーザーと政党の意見が一致する場合、政党pointを加点する
+    if user_question.agree_with_party?(party_question)
+      add_point(user_result)
+    # ユーザーと政党の意見が正反対の場合、政党pointを減点する
+    # 政党が中立やユーザー意見が無回答の場合は、処理なし
+    elsif user_question.disagree_with_party?(party_question)
+      reduce_point(user_result)
+    end
+  end
+</pre>3. さらにユーザーと政党意見の一致か不一致かを判断するメソッドを追加する ここは中間テーブル名を挟んで、見た目もややこしい感じになっている。<pre style="background-color:whitesmoke;">
+  # ユーザ意見が政党と一致する場合
+  # つまり両方とも賛成、あるいはともに反対する場合
+  def agree_with_party?(party_question)
+    both_agree?(party_question) || both_disagree?(party_question)
+  end
+
+  # ユーザ意見が政党と不一致する場合
+  # つまり一方が賛成で、もう一方は反対
+  def disagree_with_party?(party_question)
+    user_positive_but_party_disagree?(party_question) || user_negative_but_party_agree?(party_question)
+  end
+
+  # 議題に対して、ユーザも政党も賛成する場合
+  def both_agree?(party_question)
+    result_positive? &amp;&amp; party_question.agree?
+  end
+
+  # 議題に対して、ユーザも政党も反対する場合
+  def both_disagree?(party_question)
+    result_negative? &amp;&amp; party_question.disagree?
+  end
+
+  # 議題に対して、ユーザが賛成する場合
+  # つまり選択意見が超賛成か賛成の場合
+  def result_positive?
+    self.great? || self.good?
+  end
+
+  # ユーザ意見が反対の場合
+  def result_negative?
+    self.bad?
+  end
+
+  # 議題に対して、ユーザが賛成で、政党が反対する場合
+  def user_positive_but_party_disagree?(party_question)
+    result_positive? &amp;&amp; party_question.disagree?
+  end
+
+  # 議題に対して、ユーザが反対で、政党が賛成する場合
+  def user_negative_but_party_agree?(party_question)
+    result_negative? &amp;&amp; party_question.agree?
+  end
+</pre>4. 最後に加点と減点を実行するメソッド<pre style="background-color:whitesmoke;">
+  # ユーザー意見が超賛成の場合、政党point+2
+  # ユーザー意見が賛成の場合、政党point+1
+  def add_point(user_result)
+    if user_result == "great"
+      self.point += 2
+      save
+    elsif user_result == "good"
+      self.point += 1
+      save
+    end
+  end
+
+  # ユーザーと政党が正反対の場合合、政党point-1
+  def reduce_point(user_result)
+    self.point -= 1
+    save
+  end
+</pre></details><p>修正前のSQLクエリ発行も政党の数分で政党意見取得と政党ポイント更新の2重発行になっている。</p><details> <summary>修正前SQLクエリ発行状況</summary><pre style="background-color:whitesmoke;">
+# 修正前
+User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 70], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:5:in `current_user'
+  UserParty Load (0.2ms)  SELECT "user_parties".* FROM "user_parties" WHERE "user_parties"."user_id" = $1  [["user_id", 70]]
+  ↳ app/controllers/questions_controller.rb:15:in `answer'
+  PartyQuestion Load (0.2ms)  SELECT "party_questions".* FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."party_id" = $2 LIMIT $3  [["question_id", 2], ["party_id", 1], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:11:in `calculate_point'
+  PartyQuestion Load (0.2ms)  SELECT "party_questions".* FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."party_id" = $2 LIMIT $3  [["question_id", 2], ["party_id", 2], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:11:in `calculate_point'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user_party.rb:30:in `add_point'
+  Party Load (0.2ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  UserParty Update (0.4ms)  UPDATE "user_parties" SET "point" = $1, "updated_at" = $2 WHERE "user_parties"."id" = $3  [["point", 4], ["updated_at", "2022-09-01 13:23:01.801733"], ["id", 513]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  TRANSACTION (0.4ms)  COMMIT
+  ↳ app/models/user_party.rb:30:in `add_point'
+  PartyQuestion Load (0.2ms)  SELECT "party_questions".* FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."party_id" = $2 LIMIT $3  [["question_id", 2], ["party_id", 3], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:11:in `calculate_point'
+  TRANSACTION (0.2ms)  BEGIN
+  ↳ app/models/user_party.rb:30:in `add_point'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 3], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  UserParty Update (0.3ms)  UPDATE "user_parties" SET "point" = $1, "updated_at" = $2 WHERE "user_parties"."id" = $3  [["point", 4], ["updated_at", "2022-09-01 13:23:01.809307"], ["id", 514]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  TRANSACTION (0.4ms)  COMMIT
+  ↳ app/models/user_party.rb:30:in `add_point'
+  PartyQuestion Load (0.2ms)  SELECT "party_questions".* FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."party_id" = $2 LIMIT $3  [["question_id", 2], ["party_id", 4], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:11:in `calculate_point'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user_party.rb:30:in `add_point'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 4], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  UserParty Update (0.3ms)  UPDATE "user_parties" SET "point" = $1, "updated_at" = $2 WHERE "user_parties"."id" = $3  [["point", 1], ["updated_at", "2022-09-01 13:23:01.815549"], ["id", 515]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  TRANSACTION (0.4ms)  COMMIT
+  ↳ app/models/user_party.rb:30:in `add_point'
+  PartyQuestion Load (0.2ms)  SELECT "party_questions".* FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."party_id" = $2 LIMIT $3  [["question_id", 2], ["party_id", 5], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:11:in `calculate_point'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user_party.rb:30:in `add_point'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 5], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  UserParty Update (0.4ms)  UPDATE "user_parties" SET "point" = $1, "updated_at" = $2 WHERE "user_parties"."id" = $3  [["point", 1], ["updated_at", "2022-09-01 13:23:01.822521"], ["id", 516]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  TRANSACTION (0.4ms)  COMMIT
+  ↳ app/models/user_party.rb:30:in `add_point'
+  PartyQuestion Load (0.2ms)  SELECT "party_questions".* FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."party_id" = $2 LIMIT $3  [["question_id", 2], ["party_id", 6], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:11:in `calculate_point'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user_party.rb:30:in `add_point'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 6], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  UserParty Update (0.2ms)  UPDATE "user_parties" SET "point" = $1, "updated_at" = $2 WHERE "user_parties"."id" = $3  [["point", 4], ["updated_at", "2022-09-01 13:23:01.829242"], ["id", 517]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  TRANSACTION (0.5ms)  COMMIT
+  ↳ app/models/user_party.rb:30:in `add_point'
+  PartyQuestion Load (0.2ms)  SELECT "party_questions".* FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."party_id" = $2 LIMIT $3  [["question_id", 2], ["party_id", 7], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:11:in `calculate_point'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user_party.rb:30:in `add_point'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 7], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  UserParty Update (0.4ms)  UPDATE "user_parties" SET "point" = $1, "updated_at" = $2 WHERE "user_parties"."id" = $3  [["point", 1], ["updated_at", "2022-09-01 13:23:01.835753"], ["id", 518]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  TRANSACTION (0.4ms)  COMMIT
+  ↳ app/models/user_party.rb:30:in `add_point'
+  PartyQuestion Load (0.2ms)  SELECT "party_questions".* FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."party_id" = $2 LIMIT $3  [["question_id", 2], ["party_id", 8], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:11:in `calculate_point'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user_party.rb:30:in `add_point'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 8], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  UserParty Update (0.2ms)  UPDATE "user_parties" SET "point" = $1, "updated_at" = $2 WHERE "user_parties"."id" = $3  [["point", 1], ["updated_at", "2022-09-01 13:23:01.842407"], ["id", 519]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  TRANSACTION (0.5ms)  COMMIT
+  ↳ app/models/user_party.rb:30:in `add_point'
+  PartyQuestion Load (0.1ms)  SELECT "party_questions".* FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."party_id" = $2 LIMIT $3  [["question_id", 2], ["party_id", 9], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:11:in `calculate_point'
+  TRANSACTION (0.1ms)  BEGIN
+  ↳ app/models/user_party.rb:30:in `add_point'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 9], ["LIMIT", 1]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  UserParty Update (0.3ms)  UPDATE "user_parties" SET "point" = $1, "updated_at" = $2 WHERE "user_parties"."id" = $3  [["point", 2], ["updated_at", "2022-09-01 13:23:01.848200"], ["id", 520]]
+  ↳ app/models/user_party.rb:30:in `add_point'
+  TRANSACTION (0.4ms)  COMMIT
+  ↳ app/models/user_party.rb:30:in `add_point'
+</pre></details><p>修正後のロジックはなるべく設計の時の考え方をそのまま反映するようにした。 まず個々の政党でなく、ユーザーと紐づいた政党レコードを一括更新できるようにする。</p><div class="language-ruby highlighter-rouge"><div class="code-header"> <span data-label-text="Ruby"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="n">current_user</span><span class="p">.</span><span class="nf">user_parties</span><span class="p">.</span><span class="nf">calculate_point</span><span class="p">(</span><span class="vi">@question</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+</pre></table></code></div></div><p>そして賛成意見を持つ政党リストと反対意見を持つ政党リストを取得する。 最後に<code class="language-plaintext highlighter-rouge">update_all</code>メソッドを使って、ふたつグループの政党ポイントを一括更新する。</p><div class="language-ruby highlighter-rouge"><div class="code-header"> <span data-label-text="Ruby"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre><td class="rouge-code"><pre>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">calculate_point</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">user_result</span><span class="p">)</span>
+    <span class="c1"># 該当質問に賛成意見を持つ政党リストを取得</span>
+    <span class="n">agree_party_ids</span> <span class="o">=</span> <span class="n">question</span><span class="p">.</span><span class="nf">party_questions</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="ss">opinion: :agree</span><span class="p">).</span><span class="nf">pluck</span><span class="p">(</span><span class="ss">:party_id</span><span class="p">)</span>
+    <span class="n">agree_user_parties</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="s1">'party_id IN (?)'</span><span class="p">,</span> <span class="n">agree_party_ids</span><span class="p">)</span>
+
+    <span class="c1"># 該当質問に反対意見を持つ政党リストを取得</span>
+    <span class="n">disagree_party_ids</span> <span class="o">=</span> <span class="n">question</span><span class="p">.</span><span class="nf">party_questions</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="ss">opinion: :disagree</span><span class="p">).</span><span class="nf">pluck</span><span class="p">(</span><span class="ss">:party_id</span><span class="p">)</span>
+    <span class="n">disagree_user_parties</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="s1">'party_id IN (?)'</span><span class="p">,</span> <span class="n">disagree_party_ids</span><span class="p">)</span>
+
+    <span class="k">case</span> <span class="n">user_result</span>
+    <span class="k">when</span> <span class="s2">"great"</span> <span class="c1"># ユーザーが超賛成の場合</span>
+      <span class="n">agree_user_parties</span><span class="p">.</span><span class="nf">update_all</span><span class="p">(</span><span class="s2">"point = point + 2"</span><span class="p">)</span>
+      <span class="n">disagree_user_parties</span><span class="p">.</span><span class="nf">update_all</span><span class="p">(</span><span class="s2">"point = point - 1"</span><span class="p">)</span>
+    <span class="k">when</span> <span class="s2">"good"</span> <span class="c1"># ユーザーが賛成の場合</span>
+      <span class="n">agree_user_parties</span><span class="p">.</span><span class="nf">update_all</span><span class="p">(</span><span class="s2">"point = point + 1"</span><span class="p">)</span>
+      <span class="n">disagree_user_parties</span><span class="p">.</span><span class="nf">update_all</span><span class="p">(</span><span class="s2">"point = point - 1"</span><span class="p">)</span>
+    <span class="k">when</span> <span class="s2">"bad"</span> <span class="c1"># ユーザーが反対の場合</span>
+      <span class="n">agree_user_parties</span><span class="p">.</span><span class="nf">update_all</span><span class="p">(</span><span class="s2">"point = point - 1"</span><span class="p">)</span>
+      <span class="n">disagree_user_parties</span><span class="p">.</span><span class="nf">update_all</span><span class="p">(</span><span class="s2">"point = point + 1"</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+</pre></table></code></div></div><details> <summary>修正後SQLクエリ発行状況</summary><pre style="background-color:whitesmoke;">
+# 修正後
+  User Load (0.3ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 60], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:5:in `current_user'
+  PartyQuestion Pluck (0.3ms)  SELECT "party_questions"."party_id" FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."opinion" = $2  [["question_id", 1], ["opinion", 0]]
+  ↳ app/models/user_party.rb:9:in `calculate_point'
+  PartyQuestion Pluck (0.2ms)  SELECT "party_questions"."party_id" FROM "party_questions" WHERE "party_questions"."question_id" = $1 AND "party_questions"."opinion" = $2  [["question_id", 1], ["opinion", 1]]
+  ↳ app/models/user_party.rb:12:in `calculate_point'
+  UserParty Update All (0.6ms)  UPDATE "user_parties" SET point = point + 2 WHERE "user_parties"."user_id" = $1 AND (party_id IN (1,2,3,6))  [["user_id", 60]]
+  ↳ app/models/user_party.rb:17:in `calculate_point'
+  UserParty Update All (0.7ms)  UPDATE "user_parties" SET point = point - 1 WHERE "user_parties"."user_id" = $1 AND (party_id IN (4,5,7,8))  [["user_id", 60]]
+  ↳ app/models/user_party.rb:18:in `calculate_point'
+</pre></details><h2 id="結果一覧メソッドの修正"><span class="me-2">結果一覧メソッドの修正</span><a href="#結果一覧メソッドの修正" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>結果ページでは政党ポイントランキングを表示する。 ここでchartjsを使うので、政党名と政党ポイントを分けて取得する必要 最初のやり方としては、まず政党とポイントをそれぞれ空の配列を作成し、user_partiesテーブルから一つ一つレコードを取得して、配列にデータをpushする。<br /> これも政党の数分でSQLが発行される。</p><p>修正前コード</p><div class="language-ruby highlighter-rouge"><div class="code-header"> <span data-label-text="Ruby"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">result</span>
+    <span class="n">user_parties</span> <span class="o">=</span> <span class="no">UserParty</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="ss">user_id: </span><span class="n">current_user</span><span class="p">.</span><span class="nf">id</span><span class="p">)</span>
+    <span class="vi">@results</span> <span class="o">=</span> <span class="n">user_parties</span><span class="p">.</span><span class="nf">ranking</span>
+    <span class="n">parties</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="vi">@results</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="o">|</span>
+      <span class="n">point</span> <span class="o">=</span> <span class="n">result</span><span class="p">.</span><span class="nf">point</span>
+      <span class="n">party_name</span> <span class="o">=</span> <span class="n">result</span><span class="p">.</span><span class="nf">party</span><span class="p">.</span><span class="nf">name</span>
+      <span class="n">parties</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="n">party_name</span><span class="p">)</span>
+      <span class="n">points</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+    <span class="k">end</span>
+</pre></table></code></div></div><details> <summary>修正前SQLクエリ発行状況</summary><pre style="background-color:whitesmoke;">
+# 修正前
+Processing by StaticPagesController#result as TURBO_STREAM
+  User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 60], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:5:in `current_user'
+  UserParty Load (0.3ms)  SELECT "user_parties".* FROM "user_parties" WHERE "user_parties"."user_id" = $1 ORDER BY "user_parties"."point" DESC  [["user_id", 60]]
+  ↳ app/controllers/static_pages_controller.rb:11:in `result'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 6], ["LIMIT", 1]]
+  ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 9], ["LIMIT", 1]]
+  ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
+  Party Load (0.2ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 3], ["LIMIT", 1]]
+  ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
+  Party Load (0.2ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 8], ["LIMIT", 1]]
+  ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 4], ["LIMIT", 1]]
+  ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 7], ["LIMIT", 1]]
+  ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
+  Party Load (0.1ms)  SELECT "parties".* FROM "parties" WHERE "parties"."id" = $1 LIMIT $2  [["id", 5], ["LIMIT", 1]]
+  ↳ app/controllers/static_pages_controller.rb:13:in `block in result'
+  Rendering layout layouts/application.html.erb
+</pre></details><p>修正後は、<code class="language-plaintext highlighter-rouge">joins</code>と<code class="language-plaintext highlighter-rouge">pluck</code>メソッド使って、政党ポイントデータを一括取得する</p><div class="language-ruby highlighter-rouge"><div class="code-header"> <span data-label-text="Ruby"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre>  <span class="k">def</span> <span class="nf">result</span>
+    <span class="n">user_parties</span> <span class="o">=</span> <span class="n">current_user</span><span class="p">.</span><span class="nf">user_parties</span><span class="p">.</span><span class="nf">ranking</span>
+    <span class="n">parties</span> <span class="o">=</span> <span class="n">user_parties</span><span class="p">.</span><span class="nf">joins</span><span class="p">(</span><span class="ss">:party</span><span class="p">).</span><span class="nf">pluck</span><span class="p">(</span><span class="ss">:name</span><span class="p">)</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">user_parties</span><span class="p">.</span><span class="nf">pluck</span><span class="p">(</span><span class="ss">:point</span><span class="p">)</span>
+  <span class="k">end</span>
+</pre></table></code></div></div><details> <summary>修正後SQLクエリ発行状況</summary><pre style="background-color:whitesmoke;">
+# 修正後
+User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 66], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:5:in `current_user'
+  UserParty Pluck (0.4ms)  SELECT "name" FROM "user_parties" INNER JOIN "parties" ON "parties"."id" = "user_parties"."party_id" WHERE "user_parties"."user_id" = $1 ORDER BY "user_parties"."point" DESC  [["user_id", 66]]
+  ↳ app/controllers/static_pages_controller.rb:9:in `result'
+  UserParty Pluck (0.2ms)  SELECT "user_parties"."point" FROM "user_parties" WHERE "user_parties"."user_id" = $1 ORDER BY "user_parties"."point" DESC  [["user_id", 66]]
+  ↳ app/controllers/static_pages_controller.rb:10:in `result'
+</pre></details><p>以上でSQLクエリが大量発行したコード部分をリファクタリングした。 ただ政党ポイント計算のところはまだ改善の余地があるかなと思った。後日またやってみたい。</p><hr /><p>参照</p><p><a href="https://stackoverflow.com/questions/4967191/mass-increment-field-by-1">https://stackoverflow.com/questions/4967191/mass-increment-field-by-1</a></p><p><a href="https://phrase.com/blog/posts/activerecord-speed-up-your-sql-queries/">https://phrase.com/blog/posts/activerecord-speed-up-your-sql-queries/</a></p><p><a href="https://stackoverflow.com/questions/2509320/saving-multiple-objects-in-a-single-call-in-rails">https://stackoverflow.com/questions/2509320/saving-multiple-objects-in-a-single-call-in-rails</a></p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw me-1"></i> <a href="/categories/coding/">Coding</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw me-1"></i> <a href="/tags/ruby-on-rails/" class="post-tag no-text-decoration" >Ruby on Rails</a> <a href="/tags/sql/" class="post-tag no-text-decoration" >SQL</a> <a href="/tags/database/" class="post-tag no-text-decoration" >Database</a></div><div class=" post-tail-bottom d-flex justify-content-between align-items-center mt-5 pb-2 " ><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper d-flex align-items-center"> <span class="share-label text-muted">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=insert_all%E3%82%84update_all%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%80%81SQL%E3%82%AF%E3%82%A8%E3%83%AA%E3%81%AE%E7%99%BA%E8%A1%8C%E3%82%92%E5%89%8A%E6%B8%9B%E3%81%99%E3%82%8B%20-%20Lei's%20Notebook&url=https%3A%2F%2Flei900.github.io%2F22%2F09%2Frefactor-reduce-sql-query%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter"> <i class="fa-fw fa-brands fa-square-x-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=insert_all%E3%82%84update_all%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%80%81SQL%E3%82%AF%E3%82%A8%E3%83%AA%E3%81%AE%E7%99%BA%E8%A1%8C%E3%82%92%E5%89%8A%E6%B8%9B%E3%81%99%E3%82%8B%20-%20Lei's%20Notebook&u=https%3A%2F%2Flei900.github.io%2F22%2F09%2Frefactor-reduce-sql-query%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https%3A%2F%2Flei900.github.io%2F22%2F09%2Frefactor-reduce-sql-query%2F&text=insert_all%E3%82%84update_all%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%80%81SQL%E3%82%AF%E3%82%A8%E3%83%AA%E3%81%AE%E7%99%BA%E8%A1%8C%E3%82%92%E5%89%8A%E6%B8%9B%E3%81%99%E3%82%8B%20-%20Lei's%20Notebook" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <button id="copy-link" aria-label="Copy link" class="btn small" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy link" data-title-succeed="Link copied successfully!" > <i class="fa-fw fas fa-link pe-none fs-6"></i> </button> </span></div></div></div></article></main><aside aria-label="Panel" id="panel-wrapper" class="col-xl-3 ps-2 mb-5 text-muted"><div class="access"><section id="access-lastmod"><h2 class="panel-heading">Recently Updated</h2><ul class="content list-unstyled ps-0 pb-1 ms-1 mt-2"><li class="text-truncate lh-lg"> <a href="/24/08/js-dl-memory-leak/">"drain" event を使ってメモリリークを防ぐ</a><li class="text-truncate lh-lg"> <a href="/24/08/world-class-engieer/">『世界一流エンジニアの思考法』読書メモ: 仕事は楽しむもの</a><li class="text-truncate lh-lg"> <a href="/24/04/secondary-mongodb-setup/">MongoDBのreplica setに新しいsecondary nodeを追加する手順</a><li class="text-truncate lh-lg"> <a href="/24/05/domain-driven-design-fundamental/">ドメイン駆動設計についての理解</a><li class="text-truncate lh-lg"> <a href="/24/05/team-geek/">『Team Geek』読書メモ: ソフトウエア開発はチームスポーツである</a></ul></section><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/ruby-on-rails/">Ruby on Rails</a> <a class="post-tag btn btn-outline-primary" href="/tags/ruby/">Ruby</a> <a class="post-tag btn btn-outline-primary" href="/tags/javascript/">JavaScript</a> <a class="post-tag btn btn-outline-primary" href="/tags/react/">React</a> <a class="post-tag btn btn-outline-primary" href="/tags/reading-notes/">Reading Notes</a> <a class="post-tag btn btn-outline-primary" href="/tags/rspec/">RSpec</a> <a class="post-tag btn btn-outline-primary" href="/tags/test/">Test</a> <a class="post-tag btn btn-outline-primary" href="/tags/capybara/">Capybara</a> <a class="post-tag btn btn-outline-primary" href="/tags/database/">Database</a> <a class="post-tag btn btn-outline-primary" href="/tags/api/">API</a></div></section></div><section id="toc-wrapper" class="ps-0 pe-4"><h2 class="panel-heading ps-3 pt-2 mb-2">Contents</h2><nav id="toc"></nav></section></aside></div><div class="row"><div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 px-md-4"><aside id="related-posts" aria-labelledby="related-label"><h3 class="mb-4" id="related-label">Further Reading</h3><nav class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4"><article class="col"> <a href="/22/10/rails-delegated-types-polymorphic/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1666191600" data-df="ll" > Oct 20, 2022 </time><h4 class="pt-0 my-2">RailsのDelegated Typesで複数モデルを扱うフィード機能を作る</h4><div class="text-muted"><p> 背景 個人 PF でニュースフィードみたいな機能を作りたい。そのフィードで表示する情報は複数のモデルから獲得して、時間順や人気順で表示する。 たとえば、Facebook のタイムラインように、友達の投稿だけでなく、誕生日の通知やアクティビティ更新、イベント情報などいろんな情報を表示する。 PF ではまだ二つ種類だけの投稿を表示する予定なので、一番簡単なのは、その二つ種類の投稿モデルを一...</p></div></div></a></article><article class="col"> <a href="/22/07/unique-constraint-and-unique-index/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1657033200" data-df="ll" > Jul 6, 2022 </time><h4 class="pt-0 my-2">INDEX、複合INDEX、UNIQUE制約とUNIQUE INDEXについて</h4><div class="text-muted"><p> INDEXとは 特定のカラムからデータを取得する際に、テーブルの中の特定のカラムのデータを複製し検索が行いやすいようにしたもの。 例えばユーザー名を検索する場合、データベースはデフォルトで表の1行目から最後まで探す、いわゆる全表スキャン（Full-table Scan）の方法。 　もしユーザー名にindexをつけると、本の索引のように、アルファベット順などのアルゴリズムを使って途中から...</p></div></div></a></article><article class="col"> <a href="/22/08/rails-sti-single-table-inheritance/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1660230000" data-df="ll" > Aug 12, 2022 </time><h4 class="pt-0 my-2">単一テーブル継承(STI)について</h4><div class="text-muted"><p> 応用篇でのtaxonomiesテーブルは何なんだって気になってて、調べてみたら、単一テーブル継承(STI)で使ってるテーブルのことがわかった。 同じ親クラスから継承している複数の子モデルの情報は各自のテーブルではなく、全てを親モデルのテーブルに記入する。 各子モデルの情報はtypeコラムで標識する。 今回はauthor, category, tagの三つのモデルの情報をtaxonomie...</p></div></div></a></article></nav></aside><nav class="post-navigation d-flex justify-content-between" aria-label="Post Navigation"> <a href="/22/08/rails-activemodel-datatype-text/" class="btn btn-outline-primary" aria-label="Older" ><p>ActiveModelでは`text`型は指定不可のことについて</p></a> <a href="/22/09/ajax-capybara-rspec-sleep/" class="btn btn-outline-primary" aria-label="Newer" ><p>Javascript処理を挟むテストの場合、Capybaraを待たせる必要</p></a></nav><script src="https://utteranc.es/client.js" repo="lei900/lei900.github.io" issue-term="title" crossorigin="anonymous" async ></script> <script type="text/javascript"> (function () { const origin = 'https://utteranc.es'; const iframe = 'iframe.utterances-frame'; const lightTheme = 'github-light'; const darkTheme = 'github-dark'; let initTheme = lightTheme; const html = document.documentElement; if ( (html.hasAttribute('data-mode') && html.getAttribute('data-mode') === 'dark') || (!html.hasAttribute('data-mode') && window.matchMedia('(prefers-color-scheme: dark)').matches) ) { initTheme = darkTheme; } addEventListener('message', (event) => { let theme; /* credit to <https://github.com/utterance/utterances/issues/170#issuecomment-594036347> */ if (event.origin === origin) { /* page initial */ theme = initTheme; } else if (event.source === window && event.data && event.data.direction === ModeToggle.ID) { /* global theme mode changed */ const mode = event.data.message; theme = mode === ModeToggle.DARK_MODE ? darkTheme : lightTheme; } else { return; } const message = { type: 'set-theme', theme: theme }; const utterances = document.querySelector(iframe).contentWindow; utterances.postMessage(message, origin); }); })(); </script><footer aria-label="Site Info" class=" d-flex flex-column justify-content-center text-muted flex-lg-row justify-content-lg-between align-items-lg-center pb-lg-3 " ><p>© <time>2024</time> <a href="https://twitter.com/maize_2">Lei's Notebook</a>. <span data-bs-toggle="tooltip" data-bs-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author." >Some rights reserved.</span></p><p>Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> theme.</p></footer></div></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-11 content"><div id="search-hints"><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/ruby-on-rails/">Ruby on Rails</a> <a class="post-tag btn btn-outline-primary" href="/tags/ruby/">Ruby</a> <a class="post-tag btn btn-outline-primary" href="/tags/javascript/">JavaScript</a> <a class="post-tag btn btn-outline-primary" href="/tags/react/">React</a> <a class="post-tag btn btn-outline-primary" href="/tags/reading-notes/">Reading Notes</a> <a class="post-tag btn btn-outline-primary" href="/tags/rspec/">RSpec</a> <a class="post-tag btn btn-outline-primary" href="/tags/test/">Test</a> <a class="post-tag btn btn-outline-primary" href="/tags/capybara/">Capybara</a> <a class="post-tag btn btn-outline-primary" href="/tags/database/">Database</a> <a class="post-tag btn btn-outline-primary" href="/tags/api/">API</a></div></section></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><aside aria-label="Scroll to Top"> <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow"> <i class="fas fa-angle-up"></i> </button></aside></div><div id="mask"></div><aside id="notification" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-animation="true" data-bs-autohide="false" ><div class="toast-header"> <button type="button" class="btn-close ms-auto" data-bs-dismiss="toast" aria-label="Close" ></button></div><div class="toast-body text-center pt-0"><p class="px-2 mb-3">A new version of content is available.</p><button type="button" class="btn btn-primary" aria-label="Update"> Update </button></div></aside><script src="https://cdn.jsdelivr.net/combine/npm/jquery@3.7.1/dist/jquery.min.js,npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js,npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js,npm/loading-attribute-polyfill@2.1.1/dist/loading-attribute-polyfill.umd.min.js,npm/magnific-popup@1.1.0/dist/jquery.magnific-popup.min.js,npm/clipboard@2.0.11/dist/clipboard.min.js,npm/dayjs@1.11.10/dayjs.min.js,npm/dayjs@1.11.10/locale/en.min.js,npm/dayjs@1.11.10/plugin/relativeTime.min.js,npm/dayjs@1.11.10/plugin/localizedFormat.min.js,npm/tocbot@4.25.0/dist/tocbot.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script defer src="/assets/js/dist/app.min.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=G-MV8BDQBQG7"></script> <script> document.addEventListener("DOMContentLoaded", function(event) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-MV8BDQBQG7'); }); </script> <script> /* Note: dependent library will be loaded in `js-selector.html` */ SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<article class="px-1 px-sm-2 px-lg-4 px-xl-0"><header><h2><a href="{url}">{title}</a></h2><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div></header><p>{snippet}</p></article>', noResultsText: '<p class="mt-5"></p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="me-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script>
